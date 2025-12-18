@@ -138,6 +138,26 @@ export interface SearchListingsParams {
 
 // Search result
 export interface SearchListingResult {
+  agency_id: null;
+  owner_user_id: null;
+  currency: string;
+  price_per_sqft: number;
+  address_text: string;
+  lat: number;
+  lng: number;
+  owner_id: null;
+  owner_name: string;
+  width_ft: number;
+  length_ft: number;
+  area_label: string;
+  price: number;
+  created_at: string;
+  updated_at: string;
+  bathrooms: number;
+  bedrooms: number;
+  description: string;
+  kind: string;
+  status: string;
   id: string;
   listing_code: string;
   title: string;

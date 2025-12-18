@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { PropertyGrid } from "@/components/property-grid";
 import { searchListings } from "@/lib/db/listings";
-import type { ListingKind } from "@/lib/types/database";
+import type { CurrencyCode, ListingKind, ListingStatus } from "@/lib/types/database";
 
 interface SearchPageProps {
   searchParams: Promise<{
@@ -21,7 +21,7 @@ interface SearchPageProps {
 async function SearchResults({ searchParams }: SearchPageProps) {
   const params = await searchParams;
 
-  const listings = await searchListings({
+  const searchResults = await searchListings({
     q: params.q || null,
     kind: (params.type as ListingKind) || null,
     region_id: params.region ? parseInt(params.region) : null,
@@ -35,6 +35,30 @@ async function SearchResults({ searchParams }: SearchPageProps) {
     price_to: params.price_to ? parseFloat(params.price_to) : null,
     limit: 24,
   });
+
+  const listings = searchResults.map((result) => ({
+    ...result,
+    kind: (result.kind as ListingKind) || "defaultKind" as ListingKind, // Ensure kind is cast to ListingKind
+    status: (result.status as ListingStatus) || "defaultStatus" as ListingStatus,
+    description: result.description || "",
+    bedrooms: result.bedrooms || 0,
+    bathrooms: result.bathrooms || 0,
+    width_ft: result.width_ft || 0,
+    length_ft: result.length_ft || 0,
+    area_label: result.area_label || "defaultAreaLabel",
+    price: result.price || 0,
+    created_at: result.created_at || new Date().toISOString(),
+    updated_at: result.updated_at || new Date().toISOString(),
+    currency: (result.currency as CurrencyCode) || "USD" as CurrencyCode, // Ensure currency is cast to CurrencyCode
+    price_per_sqft: result.price_per_sqft || 0,
+    address_text: result.address_text || "Unknown Address",
+    lat: result.lat || 0,
+    lng: result.lng || 0,
+    owner_id: result.owner_id || null,
+    owner_name: result.owner_name || "Unknown Owner",
+    agency_id: result.agency_id || null, // Provide default or mapped value
+    owner_user_id: result.owner_user_id || null, // Provide default or mapped value
+  }));
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8 max-w-7xl">

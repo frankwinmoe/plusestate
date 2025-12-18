@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+
 import { PropertyCard } from "./property-card";
 import type { ListingWithRelations } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
