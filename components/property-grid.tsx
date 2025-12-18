@@ -22,7 +22,7 @@ export function PropertyGrid({
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className="bg-card border border-border rounded-xl aspect-[4/3] animate-pulse"
+            className="bg-card border border-border rounded-xl aspect-4/3 animate-pulse"
           />
         ))}
       </div>
