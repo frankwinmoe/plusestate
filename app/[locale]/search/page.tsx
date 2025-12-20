@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { PropertyGrid } from "@/components/property-grid";
 import { searchListings } from "@/lib/db/listings";
 import type { CurrencyCode, ListingKind, ListingStatus } from "@/lib/types/database";
+import { TranslationProvider } from "@/context/TranslationContext";
+import { getLocale, getMessages } from "next-intl/server";
 
 interface SearchPageProps {
   searchParams: Promise<{
@@ -19,6 +21,10 @@ interface SearchPageProps {
 }
 
 async function SearchResults({ searchParams }: SearchPageProps) {
+  // Determine locale and translations
+  const locale = await getLocale();
+  const translations = await getMessages({ locale });
+
   const params = await searchParams;
 
   const searchResults = await searchListings({
@@ -59,6 +65,7 @@ async function SearchResults({ searchParams }: SearchPageProps) {
     agency_id: result.agency_id || null, // Provide default or mapped value
     owner_user_id: result.owner_user_id || null, // Provide default or mapped value
   }));
+  console.log("Listings:", listings);
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8 max-w-7xl">
@@ -74,7 +81,9 @@ async function SearchResults({ searchParams }: SearchPageProps) {
           </p>
         )}
       </div>
-      <PropertyGrid listings={listings} />
+      <TranslationProvider translations={translations['featuredListingComponent']}>
+        <PropertyGrid listings={listings} />
+      </TranslationProvider>
     </div>
   );
 }

@@ -2,5 +2,22 @@
     "homePage": {
         "welcome": "Welcome to Plushouse!",
         "description": "Your one-stop shop for all things plush."
+    },
+    "propertySearchFilterComponent": {
+        "search": "Search",
+        "keywordPlaceholder": "Enter keyword or ad number",
+        "hideAdvancedFilters": "Hide Advanced Filters",
+        "showAdvancedFilters": "Show Advanced Filters"
+    },
+    "featuredListingComponent": {
+        "featuredListings": "Featured Listings",
+        "viewAll": "View All",
+        "noListingsFound": "No listings found.",
+        "recentListings": "Recent Listings",
+        "priceInquiry": "Price Inquiry",
+        "currency": "MMK",
+        "featured": "Featured",
+        "compare": "Compare",
+        "favorite": "Favorite"
     }
 }

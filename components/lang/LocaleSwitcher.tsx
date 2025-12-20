@@ -9,8 +9,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
-const LocaleSwitcher = () => {
+interface LocaleSwitcherProps {
+    className?: string;
+    size?: "sm" | "default" | "custom";
+}
+
+const LocaleSwitcher = ({ className, size = "default" }: LocaleSwitcherProps) => {
     const locale = useLocale();
     const router = useRouter();
     const pathname = usePathname();
@@ -26,12 +32,12 @@ const LocaleSwitcher = () => {
             value={locale}
             onValueChange={switchLocale}
         >
-            <SelectTrigger className="w-32">
+            <SelectTrigger className={cn("w-32", className)} size={size}>
                 <SelectValue placeholder="en" />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="my">Myanmar</SelectItem>
+                <SelectItem value="en" className="border-0">English</SelectItem>
+                <SelectItem value="my" className="border-0">Myanmar</SelectItem>
             </SelectContent>
         </Select>
     );

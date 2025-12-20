@@ -2,5 +2,22 @@
     "homePage": {
         "welcome": "Plushouse မှ ကြိုဆိုပါသည်!",
         "description": "ပလပ်ရှပစ္စည်းများအတွက် သင့်ရဲ့ တစ်နေရာတည်းစတိုးဆိုင်။"
+    },
+    "propertySearchFilterComponent": {
+        "search": "ရှာဖွေမည်",
+        "keywordPlaceholder": "စာသား (သို့) ကြော်ငြာနံပါတ် ထည့်ပါ",
+        "hideAdvancedFilters": "ပိတ်ရန်",
+        "showAdvancedFilters": "အဆင့်မြင့် စစ်ထုတ်မှု"
+    },
+    "featuredListingComponent": {
+        "featuredListings": "အထူးကြော်ငြာများ",
+        "viewAll": "အားလုံးကြည့်ရန်",
+        "noListingsFound": "ကြော်ငြာများ မတွေ့ရှိပါ။",
+        "recentListings": "နောက်ဆုံးကြော်ငြာများ",
+        "priceInquiry": "ဈေးနှုန်း မေးမြန်းရန်",
+        "currency": "ကျပ်",
+        "featured": "အထူး",
+        "compare": "နှိုင်းယှဥ်ရန်",
+        "favorite": "ကြိုက်နှစ်သက်"
     }
 }

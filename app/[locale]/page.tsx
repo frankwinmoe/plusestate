@@ -1,18 +1,22 @@
-import { DeployButton } from "@/components/deploy-button";
 import { EnvVarWarning } from "@/components/env-var-warning";
 import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
+// import { ThemeSwitcher } from "@/components/theme-switcher";
 import { PropertySearchFilter } from "@/components/property-search-filter";
 import { PropertyGrid } from "@/components/property-grid";
 import { getRecentListings, getFeaturedListings } from "@/lib/db/listings";
 import { hasEnvVars } from "@/lib/utils";
-import Link from "next/link";
 import { Suspense } from "react";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import { TranslationProvider } from "@/context/TranslationContext";
+import { ArrowRight } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+
 
 export default async function Home() {
+  // Determine locale and translations
+  const locale = await getLocale();
+  const translations = await getMessages({ locale });
+
   // Fetch listings for homepage
   const [featuredListings, recentListings] = await Promise.all([
     getFeaturedListings(6),
@@ -21,14 +25,11 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-12 md:gap-20 items-center">
+      <div className="flex-1 w-full flex flex-col items-center">
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
           <div className="w-full max-w-7xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
+            <div className="flex gap-5 items-center font-bold text-lg">
               <Link href={"/"}>PlusEstate</Link>
-              <div className="flex items-center gap-2">
-                <DeployButton />
-              </div>
             </div>
             {!hasEnvVars ? (
               <EnvVarWarning />
@@ -39,70 +40,52 @@ export default async function Home() {
             )}
           </div>
         </nav>
-        <div className="flex-1 flex flex-col gap-12 md:gap-16 w-full p-4 md:p-6 max-w-7xl">
+        <div className="flex-1 flex flex-col gap-12 md:gap-20 w-full">
           {/* Search Filter */}
-          <div className="w-full">
-            <PropertySearchFilter />
-          </div>
+          <TranslationProvider translations={translations['propertySearchFilterComponent']}>
+            <div className="flex-1 w-full flex flex-col gap-12 md:gap-20 items-center bg-amber-200 py-13">
+              <PropertySearchFilter locale={locale as "en" | "my"} />
+            </div>
+          </TranslationProvider>
 
           {/* Featured Listings */}
-          {featuredListings.length > 0 && (
-            <section className="w-full">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold">အထူးကြော်ငြာများ</h2>
-                <Link
-                  href="/search?featured=true"
-                  className="text-primary hover:underline text-sm md:text-base"
-                >
-                  အားလုံးကြည့်ရန် →
-                </Link>
-              </div>
-              <PropertyGrid listings={featuredListings} />
-            </section>
-          )}
+          <div className="p-4 md:p-6">
+            <div className="flex-1 w-full flex flex-col gap-12 md:gap-20 items-center py-13">
+              <TranslationProvider translations={translations['featuredListingComponent']}>
+                {featuredListings.length > 0 && (
+                  <section className="w-full max-w-7xl mx-auto">
+                    <div className="flex items-center justify-between mb-8">
+                      <h2 className="text-2xl md:text-3xl font-bold">{translations['featuredListingComponent']['featuredListings']}</h2>
+                      <Link href="/search?featured=true" className="text-primary hover:underline text-sm md:text-base flex justify-center items-center gap-2">
+                        <span>{translations['featuredListingComponent']['viewAll']}</span> <ArrowRight size="15" />
+                      </Link>
+                    </div>
+                    <PropertyGrid listings={featuredListings} />
+                  </section>
+                )}
+              </TranslationProvider>
+            </div>
+          </div>
 
           {/* Recent Listings */}
-          {recentListings.length > 0 && (
-            <section className="w-full">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold">နောက်ဆုံးကြော်ငြာများ</h2>
-                <Link
-                  href="/search"
-                  className="text-primary hover:underline text-sm md:text-base"
-                >
-                  အားလုံးကြည့်ရန် →
-                </Link>
-              </div>
-              <PropertyGrid listings={recentListings} />
-            </section>
-          )}
-
-          {/* Tutorial Section (only if no listings) */}
-          {featuredListings.length === 0 && recentListings.length === 0 && (
-            <div className="flex-1 flex flex-col gap-20 max-w-5xl w-full">
-              <Hero />
-              <main className="flex-1 flex flex-col gap-6 px-4">
-                <h2 className="font-medium text-xl mb-4">Next steps</h2>
-                {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-              </main>
+          <div className="p-4 md:p-6">
+            <div className="flex-1 w-full flex flex-col gap-12 md:gap-20 items-center py-13">
+              <TranslationProvider translations={translations['featuredListingComponent']}>
+                {recentListings.length > 0 && (
+                  <section className="w-full max-w-7xl mx-auto">
+                    <div className="flex items-center justify-between mb-8">
+                      <h2 className="text-2xl md:text-3xl font-bold">{translations['featuredListingComponent']['recentListings']}</h2>
+                      <Link href="/search" className="text-primary hover:underline text-sm md:text-base flex justify-center items-center gap-2">
+                        <span>{translations['featuredListingComponent']['viewAll']}</span> <ArrowRight size="15" />
+                      </Link>
+                    </div>
+                    <PropertyGrid listings={recentListings} />
+                  </section>
+                )}
+              </TranslationProvider>
             </div>
-          )}
+          </div>
         </div>
-
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
-          </p>
-          <ThemeSwitcher />
-        </footer>
       </div>
     </main>
   );

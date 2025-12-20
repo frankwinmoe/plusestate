@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { ListingWithRelations } from "@/lib/types/database";
+import { useTranslations } from "@/context/TranslationContext";
 
 interface PropertyCardProps {
   listing: ListingWithRelations;
@@ -17,16 +18,18 @@ interface PropertyCardProps {
 export function PropertyCard({ listing, className }: PropertyCardProps) {
   const [isFavorite, setIsFavorite] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
-
+  // get translations
+  const translations = useTranslations();
+  // load main image or placeholder
   const mainImage =
     listing.images && listing.images.length > 0
       ? listing.images[0].image_url
       : "/placeholder-property.jpg";
 
   const formatPrice = () => {
-    if (!listing.price_amount) return "ဈေးနှုန်း မေးမြန်းရန်";
+    if (!listing.price_amount) return translations['priceInquiry'] || "ဈေးနှုန်း မေးမြန်းရန်";
     const formatted = listing.price_amount.toLocaleString("my-MM");
-    return `${formatted} ${listing.price_unit_label || "ကျပ်"}`;
+    return `${formatted} ${listing.price_unit_label || translations['currency'] || "ကျပ်"}`;
   };
 
   const listingUrl = `/${listing.kind}/${listing.listing_code.replace(/^[A-Z]-/, "")}`;
@@ -39,13 +42,13 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
       )}
     >
       {/* Image Section */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+      <div className="relative aspect-4/3 overflow-hidden bg-muted">
         {listing.is_featured && (
           <Badge
             variant="destructive"
             className="absolute top-3 left-3 z-10 font-semibold"
           >
-            အထူးကြော်ငြာ
+            {translations ? translations['featured'] : "Featured"}
           </Badge>
         )}
         {!imageError ? (
@@ -88,7 +91,7 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
         {/* Location & Property Info */}
         <div className="space-y-2 mb-4">
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
+            <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
             <span className="line-clamp-1">
               {listing.township?.name_mm || ""}
               {listing.township && listing.region && " | "}
@@ -97,7 +100,7 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
           </div>
 
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <Building2 className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
+            <Building2 className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
             <span>
               {listing.property_type?.name_mm || ""}
               {listing.floor_label && ` | ${listing.floor_label}`}
@@ -106,7 +109,7 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
 
           {listing.area_sqft && (
             <div className="flex items-start gap-2 text-sm text-muted-foreground">
-              <Maximize2 className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
+              <Maximize2 className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
               <span>
                 {listing.area_label || `${listing.area_sqft} စတုရန်းပေ`}
               </span>
@@ -145,7 +148,7 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
         )}
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t border-border">
+        <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t border-border flex-wrap">
           <Button
             variant="outline"
             size="sm"
@@ -158,7 +161,7 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
             <span className="group-hover/btn:scale-110 transition-transform">
               +
             </span>
-            <span className="ml-2">နှိုင်းယှဥ်ရန်</span>
+            <span className="ml-2">{translations ? translations['compare'] : "Compare"}</span>
           </Button>
           <Button
             variant="outline"
@@ -176,7 +179,7 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
                 isFavorite && "fill-destructive text-destructive"
               )}
             />
-            <span>နှစ်သက်</span>
+            <span>{translations ? translations['favorite'] : "Favorite"}</span>
           </Button>
           <Button
             size="sm"
@@ -185,7 +188,7 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
           >
             <Link href={listingUrl}>
               <Search className="h-4 w-4 mr-2" />
-              <span>အသေးစိတ်ကြည့်ရန်</span>
+              <span>{translations ? translations['priceInquiry'] : "Price Inquiry"}</span>
             </Link>
           </Button>
         </div>
