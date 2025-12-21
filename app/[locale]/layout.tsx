@@ -31,15 +31,14 @@ export const metadata: Metadata = {
 // Root layout props
 interface RootLayoutProps {
   children: React.ReactNode;
-  params: {
-    locale: string;
-  };
+  params: Promise<{ locale: string }>;
 }
 
 export default async function RootLayout({ children, params }: Readonly<RootLayoutProps>) {
   // Validate locale
-  const { locale } = await params;
+  const { locale } = await params; // Removed `await` here
   if (!hasLocale(routing.locales, locale)) notFound();
+
   // Load locale messages
   const messages = await getMessages({ locale });
 
@@ -50,8 +49,6 @@ export default async function RootLayout({ children, params }: Readonly<RootLayo
   const pathname = url.pathname;
   const pathnameList = pathname.split('/');
   const isProtectedRoute = pathnameList.includes("protected");
-  console.log(pathnameList)
-  console.log("Is protected route:", isProtectedRoute);
 
   // Render layout
   return (

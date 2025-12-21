@@ -26,12 +26,12 @@ interface SidebarData {
     isActive?: boolean;
     items?: Array<{ title: string; url: string }>;
   }>;
-  navSecondary: Array<{
+  navSecondary?: Array<{
     title: string;
     url: string;
     icon: LucideIcon;
   }>;
-  projects: Array<{
+  projects?: Array<{
     name: string;
     url: string;
     icon: LucideIcon;
