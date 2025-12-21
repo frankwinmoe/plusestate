@@ -14,9 +14,11 @@ export async function AuthButton() {
 
   return user ? (
     <div className="flex items-center gap-4">
-      Hey, {user.email}!
-      <LocaleSwitcher />
-      <LogoutButton />
+      <LocaleSwitcher className="border-none outline-none" size="sm" />
+      <Button asChild size="sm" variant={"outline"}>
+        <Link href="/protected">Dashboard</Link>
+      </Button>
+      <LogoutButton size="sm" />
     </div>
   ) : (
     <div className="flex gap-2">

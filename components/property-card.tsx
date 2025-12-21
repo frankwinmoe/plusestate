@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { ListingWithRelations } from "@/lib/types/database";
 import { useTranslations } from "@/context/TranslationContext";
+import { useLocale } from "next-intl";
 
 interface PropertyCardProps {
   listing: ListingWithRelations;
@@ -19,17 +20,22 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
   const [isFavorite, setIsFavorite] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
   // get translations
+  const locale = useLocale();
   const translations = useTranslations();
-  // load main image or placeholder
+
   const mainImage =
     listing.images && listing.images.length > 0
       ? listing.images[0].image_url
       : "/placeholder-property.jpg";
 
   const formatPrice = () => {
-    if (!listing.price_amount) return translations['priceInquiry'] || "ဈေးနှုန်း မေးမြန်းရန်";
-    const formatted = listing.price_amount.toLocaleString("my-MM");
-    return `${formatted} ${listing.price_unit_label || translations['currency'] || "ကျပ်"}`;
+    if (!listing.price_amount) return translations["priceInquiry"];
+    // local formatting for Myanmar Kyat
+    let formatUnit = "en-US";
+    if (locale === "my") formatUnit = "my-MM";
+    // format price with locale
+    const formatted = listing.price_amount.toLocaleString(formatUnit);
+    return `${formatted} ${listing.price_unit_label || translations["currencyUnit"]}`;
   };
 
   const listingUrl = `/${listing.kind}/${listing.listing_code.replace(/^[A-Z]-/, "")}`;
@@ -93,16 +99,16 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
             <span className="line-clamp-1">
-              {listing.township?.name_mm || ""}
+              {locale === "en" ? listing.township?.name_en || "" : listing.township?.name_mm || ""}
               {listing.township && listing.region && " | "}
-              {listing.region?.name_mm || ""}
+              {locale === "en" ? listing.region?.name_en || "" : listing.region?.name_mm || ""}
             </span>
           </div>
 
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
             <Building2 className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
             <span>
-              {listing.property_type?.name_mm || ""}
+              {locale === "en" ? listing.property_type?.name_en || "" : listing.property_type?.name_mm || ""}
               {listing.floor_label && ` | ${listing.floor_label}`}
             </span>
           </div>
@@ -111,7 +117,7 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
             <div className="flex items-start gap-2 text-sm text-muted-foreground">
               <Maximize2 className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
               <span>
-                {listing.area_label || `${listing.area_sqft} စတုရန်းပေ`}
+                {translations['squareFeet'].replace('{area_sqft}', listing.area_sqft.toString())}
               </span>
             </div>
           )}
@@ -122,18 +128,18 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
           <p className="text-xl md:text-2xl font-bold text-primary">
             {formatPrice()}
           </p>
-          {listing.price_per_sqft && listing.area_sqft && (
+          {listing.price_per_sqft && listing.area_sqft ? (
             <p className="text-sm text-muted-foreground mt-1">
               တစ်စတုရန်းပေ {listing.price_per_sqft.toFixed(1)} သိန်း (ကျပ်)
             </p>
-          )}
+          ) : null}
         </div>
 
         {/* Agency Logo - Desktop */}
         {listing.agency?.logo_url && (
           <div className="hidden md:block mb-4 pt-4 border-t border-border">
             <Link
-              href={`/agency/${listing.agency.id}`}
+              href={`/ agency / ${listing.agency.id}`}
               className="inline-block"
             >
               <Image

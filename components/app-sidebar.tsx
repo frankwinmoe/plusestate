@@ -10,7 +10,7 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { BookOpen, Bot, Frame, LifeBuoy, LucideIcon, PieChart, Send, Settings2, SquareTerminal } from "lucide-react";
+import { BookOpen, Bot, Frame, LifeBuoy, List, LucideIcon, PieChart, Send, Settings2, SquareTerminal } from "lucide-react";
 import * as React from "react";
 
 interface SidebarData {
@@ -57,9 +57,9 @@ export const SidebarBuilder: React.FC<SidebarBuilderProps> = ({ data }) => {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {data.navMain && data.navMain.length > 0 && <NavMain items={data.navMain} />}
+        {data.projects && data.projects.length > 0 && <NavProjects projects={data.projects} />}
+        {data.navSecondary && data.navSecondary.length > 0 && <NavSecondary items={data.navSecondary} className="mt-auto" />}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
@@ -77,58 +77,50 @@ const data = {
   },
   navMain: [
     {
-      title: "Playground",
-      url: "#",
+      title: "Dashboard",
+      url: "/protected",
       icon: SquareTerminal,
-      isActive: true,
       items: [
-        { title: "History", url: "#" },
-        { title: "Starred", url: "#" },
-        { title: "Settings", url: "#" },
+        { title: "Metrics", url: "/protected/metrics" },
       ],
     },
     {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        { title: "Genesis", url: "#" },
-        { title: "Explorer", url: "#" },
-        { title: "Quantum", url: "#" },
-      ],
+      title: "Listings",
+      url: "/protected/listings",
+      icon: List,
     },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        { title: "Introduction", url: "#" },
-        { title: "Get Started", url: "#" },
-        { title: "Tutorials", url: "#" },
-        { title: "Changelog", url: "#" },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        { title: "General", url: "#" },
-        { title: "Team", url: "#" },
-        { title: "Billing", url: "#" },
-        { title: "Limits", url: "#" },
-      ],
-    },
+    // {
+    //   title: "Documentation",
+    //   url: "#",
+    //   icon: BookOpen,
+    //   items: [
+    //     { title: "Introduction", url: "#" },
+    //     { title: "Get Started", url: "#" },
+    //     { title: "Tutorials", url: "#" },
+    //     { title: "Changelog", url: "#" },
+    //   ],
+    // },
+    // {
+    //   title: "Settings",
+    //   url: "#",
+    //   icon: Settings2,
+    //   items: [
+    //     { title: "General", url: "#" },
+    //     { title: "Team", url: "#" },
+    //     { title: "Billing", url: "#" },
+    //     { title: "Limits", url: "#" },
+    //   ],
+    // },
   ],
   navSecondary: [
-    { title: "Support", url: "#", icon: LifeBuoy },
-    { title: "Feedback", url: "#", icon: Send },
+    { title: "Support", url: "/support", icon: LifeBuoy },
+    { title: "Feedback", url: "/feedback", icon: Send },
   ],
-  projects: [
-    { name: "Design Engineering", url: "#", icon: Frame },
-    { name: "Sales & Marketing", url: "#", icon: PieChart },
-    { name: "Travel", url: "#", icon: Frame },
-  ],
+  // projects: [
+  //   { name: "Design Engineering", url: "#", icon: Frame },
+  //   { name: "Sales & Marketing", url: "#", icon: PieChart },
+  //   { name: "Travel", url: "#", icon: Frame },
+  // ],
 };
 
 export function AppSidebar() {

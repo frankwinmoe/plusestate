@@ -18,6 +18,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import React from "react"
 
 export function NavMain({
   items,
@@ -33,6 +34,30 @@ export function NavMain({
     }[]
   }[]
 }) {
+  const [activeUrl, setActiveUrl] = React.useState<string | null>(null);
+
+  // Retrieve active URL from localStorage on mount
+  React.useEffect(() => {
+    const savedActiveUrl = localStorage.getItem("activeNavUrl");
+    if (savedActiveUrl) {
+      setActiveUrl(savedActiveUrl);
+    }
+    // If no saved URL, set to first item's URL
+    else if (items.length > 0) {
+      setActiveUrl(items[0].url);
+    }
+    // add isActive to the corresponding item
+    items.forEach(item => {
+      item.isActive = item.url === activeUrl;
+    });
+  }, []);
+
+  // handle navigation item click
+  const handleNavClick = (url: string) => {
+    setActiveUrl(url);
+    localStorage.setItem("activeNavUrl", url);
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
