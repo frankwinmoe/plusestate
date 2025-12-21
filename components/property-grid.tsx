@@ -1,6 +1,7 @@
 "use client";
 
 
+import { useTranslations } from "@/context/TranslationContext";
 import { PropertyCard } from "./property-card";
 import type { ListingWithRelations } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,10 @@ export function PropertyGrid({
   className,
   loading = false,
 }: PropertyGridProps) {
+
+  // Translations
+  const translations = useTranslations();
+
   if (loading) {
     return (
       <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6", className)}>
@@ -33,7 +38,7 @@ export function PropertyGrid({
     return (
       <div className={cn("text-center py-12", className)}>
         <p className="text-muted-foreground text-lg">
-          ကြော်ငြာများ မတွေ့ရှိပါ
+          {translations ? translations["noListingsFound"] : "No listings found."}
         </p>
       </div>
     );
