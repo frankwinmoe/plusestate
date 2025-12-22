@@ -1,4 +1,4 @@
-import { Key } from "readline";
+
 
 // Define a common interface for all options
 export interface Option {
@@ -8,7 +8,7 @@ export interface Option {
 }
 
 const propertyTypes: Option[] = [
-    { value: "all", label_mm: "အမျိုးအစားအားလုံး", label_en: "All Property Types" },
+    { value: "0", label_mm: "အမျိုးအစားအားလုံး", label_en: "All Property Types" },
     { value: "1", label_mm: "တိုက်ခန်း", label_en: "Apartment" },
     { value: "8", label_mm: "မီနီကွန်ဒို", label_en: "Mini Condo" },
     { value: "2", label_mm: "ကွန်ဒို", label_en: "Condominium" },
@@ -27,14 +27,14 @@ const kindOptions: Option[] = [
 ];
 
 const hostelTypes: Option[] = [
-    { value: "all", label_mm: "အဆောင်အမျိုးအစား အားလုံး", label_en: "All Hostel Types" },
+    { value: "0", label_mm: "အဆောင်အမျိုးအစား အားလုံး", label_en: "All Hostel Types" },
     { value: "1", label_mm: "အမျိုးသားအဆောင်", label_en: "Male Hostel" },
     { value: "2", label_mm: "အမျိုးသမီးအဆောင်", label_en: "Female Hostel" },
     { value: "3", label_mm: "အိမ်ထောင်သည်အဆောင်", label_en: "Married Hostel" },
 ];
 
 const hostelFormats: Option[] = [
-    { value: "all", label_mm: "အဆောင်ပုံစံ အားလုံး", label_en: "All Hostel Formats" },
+    { value: "0", label_mm: "အဆောင်ပုံစံ အားလုံး", label_en: "All Hostel Formats" },
     { value: "1", label_mm: "ခန်းမ", label_en: "Hall" },
     { value: "2", label_mm: "ထပ်ခိုး ခန်း", label_en: "Loft Room" },
     { value: "3", label_mm: "အိမ်ထောင်သည် အိပ်ခန်း", label_en: "Married Room" },
@@ -47,7 +47,7 @@ const hostelFormats: Option[] = [
 
 const priceOptions: Option[] = [
     { value: "0", label_mm: "ဈေးနှုန်း (မှ)", label_en: "Price (From)" },
-    { value: "max", label_mm: "ဈေးနှုန်း (အတွင်း)", label_en: "Price (To)" },
+    { value: "0", label_mm: "ဈေးနှုန်း (အတွင်း)", label_en: "Price (To)" },
     { value: "100", label_mm: "100 (သိန်း)", label_en: "100 Lakhs" },
     { value: "300", label_mm: "300 (သိန်း)", label_en: "300 Lakhs" },
     { value: "500", label_mm: "500 (သိန်း)", label_en: "500 Lakhs" },
@@ -64,7 +64,7 @@ const priceOptions: Option[] = [
 ];
 
 const regionOptions: Option[] = [
-    { value: "all", label_mm: "တိုင်းနှင့်ပြည်နယ်အားလုံး", label_en: "All Regions" },
+    { value: "0", label_mm: "တိုင်းနှင့်ပြည်နယ်အားလုံး", label_en: "All Regions" },
     { value: "1", label_mm: "ရန်ကုန်မြို့", label_en: "Yangon" },
     { value: "2", label_mm: "မန္တလေးမြို့", label_en: "Mandalay" },
     { value: "3", label_mm: "နေပြည်တော်", label_en: "Naypyidaw" },
@@ -84,8 +84,8 @@ const regionOptions: Option[] = [
 ];
 
 const bedOptions: Option[] = [
-    { value: "min", label_mm: "အိပ်ခန်း (အနည်းဆုံး)", label_en: "Min Bed" },
-    { value: "max", label_mm: "အိပ်ခန်း (အများဆုံး)", label_en: "Max Bed" },
+    { value: "0", label_mm: "အိပ်ခန်း (အနည်းဆုံး)", label_en: "Min Bed" },
+    { value: "0", label_mm: "အိပ်ခန်း (အများဆုံး)", label_en: "Max Bed" },
     { value: "1", label_mm: "အိပ်ခန်း ၁ လုံး", label_en: "1 Bedroom" },
     { value: "2", label_mm: "အိပ်ခန်း ၂ လုံး", label_en: "2 Bedrooms" },
     { value: "3", label_mm: "အိပ်ခန်း ၃ လုံး", label_en: "3 Bedrooms" },
@@ -94,7 +94,7 @@ const bedOptions: Option[] = [
 ];
 
 const townshipOptions: Option[] = [
-    { value: "all", label_mm: "မြို့နယ် အားလုံး", label_en: "All Townships" },
+    { value: "0", label_mm: "မြို့နယ် အားလုံး", label_en: "All Townships" },
     // Add more township options as needed
 ];
 

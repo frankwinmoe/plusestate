@@ -1,13 +1,12 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
-import { MapPin, Building2, Maximize2, Heart, Phone, MessageCircle, Share2, Flag, CheckCircle2 } from "lucide-react";
+import { MapPin, Building2, Maximize2, Heart, Phone, MessageCircle, Share2, Flag, CheckCircle2, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CopyButton } from "@/components/copy-button";
 import { getListingById, incrementListingViews } from "@/lib/db/listings";
 import { formatDistanceToNow } from "date-fns";
-import { myLocale } from "@/lib/utils/date";
+import { getLocale, getMessages } from "next-intl/server";
 
 interface PropertyDetailsPageProps {
   params: Promise<{
@@ -16,14 +15,17 @@ interface PropertyDetailsPageProps {
   }>;
 }
 
-export default async function PropertyDetailsPage({
-  params,
-}: PropertyDetailsPageProps) {
+export default async function PropertyDetailsPage({ params }: PropertyDetailsPageProps) {
+  // Extract kind and id from params
   const { kind, id } = await params;
+
+  // set translation
+  const locale = await getLocale();
+  const translations = await getMessages({ locale });
+  const pageTranslations = translations["propertyDetailsPage"];
 
   // Find listing by code (format: S-15385164 or just 15385164)
   const listingCode = `${kind.charAt(0).toUpperCase()}-${id}`;
-
   // Search by listing_code (e.g., S-15385164) or fallback to ID
   const listing = await getListingById(listingCode) || await getListingById(id);
 
@@ -40,9 +42,13 @@ export default async function PropertyDetailsPage({
       : "/placeholder-property.jpg";
 
   const formatPrice = () => {
-    if (!listing.price_amount) return "ဈေးနှုန်း မေးမြန်းရန်";
-    const formatted = listing.price_amount.toLocaleString("my-MM");
-    return `${formatted} ${listing.price_unit_label || "ကျပ်"}`;
+    if (!listing.price_amount) return pageTranslations["priceInquiry"];
+    // local formatting for Myanmar Kyat
+    let formatUnit = "en-US";
+    if (locale === "my") formatUnit = "my-MM";
+    // format price with locale
+    const formatted = listing.price_amount.toLocaleString(formatUnit);
+    return `${formatted} ${listing.price_unit_label || pageTranslations["currencyUnit"]}`;
   };
 
   const formatDate = (dateString: string | null) => {
@@ -58,48 +64,35 @@ export default async function PropertyDetailsPage({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6 md:py-8 max-w-7xl">
+      <div className="container mx-auto px-4 py-6 md:py-8 max-w-7xl min-w-4xl">
         {/* Header Info Bar */}
-        <div className="bg-card border border-border rounded-lg p-4 mb-6">
+        <div className="bg-card border border-border rounded-lg p-4 mb-6 w-full">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm">
             <div className="flex flex-wrap gap-4 md:gap-6">
               {listing.published_at && (
                 <span>
                   <b>{formatDate(listing.published_at)}</b>
                   <span className="text-muted-foreground ml-1">
-                    တွင်ကြော်ငြာတင်ခဲ့သည်
+                    {pageTranslations["postedAgo"]}
                   </span>
                 </span>
               )}
               <span>
                 <b>{listing.views_count}</b>
                 <span className="text-muted-foreground ml-1">
-                  ကြိမ် ကြည့်ရှု့ပြီး
+                  {pageTranslations["viewed"]}
                 </span>
               </span>
               <span className="flex items-center gap-2">
-                <span className="text-muted-foreground">ကြော်ငြာနံပါတ်</span>
+                <span className="text-muted-foreground">{pageTranslations["advertisementNo"]}</span>
                 <b id="adNo">{listing.listing_code}</b>
                 <CopyButton listingCode={listing.listing_code} />
-                <svg
-                  className="h-3 w-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                  />
-                </svg>
               </span>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Image Gallery */}
@@ -118,7 +111,7 @@ export default async function PropertyDetailsPage({
                     variant="destructive"
                     className="absolute top-4 left-4 font-semibold"
                   >
-                    အထူးကြော်ငြာ
+                    {pageTranslations["featured"]}
                   </Badge>
                 )}
               </div>
@@ -151,9 +144,9 @@ export default async function PropertyDetailsPage({
                   </div>
                   <div>
                     <p className="font-semibold text-lg">
-                      {listing.township?.name_mm || ""}
+                      {locale == "my" ? listing.township?.name_mm : listing.township?.name_en || ""}
                       {listing.township && listing.region && " | "}
-                      {listing.region?.name_mm || ""}
+                      {locale == "my" ? listing.region?.name_mm : listing.region?.name_en || ""}
                     </p>
                   </div>
                 </div>
@@ -164,7 +157,7 @@ export default async function PropertyDetailsPage({
                   </div>
                   <div>
                     <p className="font-semibold text-lg">
-                      {listing.property_type?.name_mm || ""}
+                      {locale == "my" ? listing.property_type?.name_mm : listing.property_type?.name_en || ""}
                       {listing.floor_label && ` | ${listing.floor_label}`}
                     </p>
                   </div>
@@ -178,12 +171,14 @@ export default async function PropertyDetailsPage({
                     <div>
                       {listing.width_ft && listing.length_ft && (
                         <p className="font-semibold text-lg mb-1">
-                          {listing.width_ft} ပေ x {listing.length_ft} ပေ
+                          {pageTranslations["widthxlengthFt"]
+                            .replace("{width_ft}", listing.width_ft)
+                            .replace("{length_ft}", listing.length_ft)}
                         </p>
                       )}
                       {listing.area_sqft && (
                         <p className="font-semibold text-lg">
-                          {listing.area_label || `${listing.area_sqft} စတုရန်းပေ`}
+                          {listing.area_label || pageTranslations["squareFeet"].replace("{area_sqft}", listing.area_sqft)}
                         </p>
                       )}
                     </div>
@@ -195,20 +190,8 @@ export default async function PropertyDetailsPage({
               <div className="border-t border-border pt-6 space-y-3">
                 <div>
                   <span className="text-muted-foreground text-sm flex items-center gap-2 mb-2">
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                      />
-                    </svg>
-                    ဈေးနှုန်း
+                    <Tag className="h-5 w-5 text-primary" />
+                    {pageTranslations["price"]}
                   </span>
                   <p className="text-3xl md:text-4xl font-bold text-primary">
                     {formatPrice()}
@@ -230,10 +213,10 @@ export default async function PropertyDetailsPage({
                           d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
                         />
                       </svg>
-                      တစ်စတုရန်းပေ ဈေးနှုန်း
+                      {pageTranslations["pricePerSquareFoot"]}
                     </span>
                     <p className="text-2xl font-bold text-primary">
-                      {listing.price_per_sqft.toFixed(1)} သိန်း (ကျပ်)
+                      {pageTranslations["pricePerSquareFootValue"].replace("{value}", listing.price_per_sqft.toFixed(1))}
                     </p>
                   </div>
                 )}
@@ -254,35 +237,35 @@ export default async function PropertyDetailsPage({
             {/* Features */}
             <div className="bg-card border border-border rounded-lg p-6">
               <h4 className="font-bold text-lg mb-4 border-b border-border pb-4">
-                အချက်အလက်များ
+                {pageTranslations["informations"]}
               </h4>
               <ul className="space-y-2">
                 {listing.bedrooms && (
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-primary" />
-                    <span>အိပ်ခန်း {listing.bedrooms} ခန်း</span>
+                    <span>{pageTranslations["bedrooms"]} {listing.bedrooms} {pageTranslations["rooms"]}</span>
                   </li>
                 )}
                 {listing.bathrooms && (
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-primary" />
-                    <span>ရေချိုးခန်း {listing.bathrooms} ခန်း</span>
+                    <span>{pageTranslations["bathrooms"]} {listing.bathrooms} {pageTranslations["rooms"]}</span>
                   </li>
                 )}
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-primary" />
-                  <span>ဆောက်လုပ်ပြီး</span>
+                  <span>{pageTranslations["constructed"]}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-primary" />
-                  <span>အလုံးစုံ ပြင်ဆင်ပြီး</span>
+                  <span>{pageTranslations["renovated"]}</span>
                 </li>
               </ul>
             </div>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-6 w-full">
             {/* Contact Actions */}
             <div className="bg-card border border-border rounded-lg p-6 space-y-4">
               <Button
@@ -290,7 +273,7 @@ export default async function PropertyDetailsPage({
                 size="lg"
               >
                 <Phone className="h-5 w-5 mr-2" />
-                ကြော်ငြာပိုင်ရှင်သို့ ဖုန်းဖြင့် ဆက်သွယ်ရန်
+                {pageTranslations["contactOwner"]}
               </Button>
               <Button
                 variant="outline"
@@ -298,14 +281,14 @@ export default async function PropertyDetailsPage({
                 size="lg"
               >
                 <MessageCircle className="h-5 w-5 mr-2" />
-                ကြော်ငြာပိုင်ရှင်နှင့် Chatting စကားပြောရန်
+                {pageTranslations["chatWithOwner"]}
               </Button>
             </div>
 
             {/* Agency Info */}
             {listing.agency && (
               <div className="bg-card border border-border rounded-lg p-6">
-                <h4 className="font-bold text-lg mb-4">အေဂျင်စီ</h4>
+                <h4 className="font-bold text-lg mb-4">{pageTranslations["agency"]}</h4>
                 <div className="flex items-center gap-4">
                   {listing.agency.logo_url && (
                     <Image
@@ -331,21 +314,21 @@ export default async function PropertyDetailsPage({
             {/* Action Buttons */}
             <div className="bg-card border border-border rounded-lg p-6">
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" className="flex-1 min-w-[120px]">
+                <Button variant="outline" size="sm" className="flex-1 min-w-[120px] hover:bg-blue-500 hover:text-white">
                   <span className="mr-2">+</span>
-                  နှိုင်းယှဥ်ရန်
+                  {pageTranslations["compare"]}
                 </Button>
-                <Button variant="outline" size="sm" className="flex-1 min-w-[120px]">
+                <Button variant="outline" size="sm" className="flex-1 min-w-[120px] hover:bg-red-500 hover:text-white">
                   <Heart className="h-4 w-4 mr-2" />
-                  နှစ်သက်
+                  {pageTranslations["favorite"]}
                 </Button>
-                <Button variant="outline" size="sm" className="flex-1 min-w-[120px]">
+                <Button variant="outline" size="sm" className="flex-1 min-w-[120px] hover:bg-green-500 hover:text-white">
                   <Share2 className="h-4 w-4 mr-2" />
-                  မျှဝေရန်
+                  {pageTranslations["share"]}
                 </Button>
-                <Button variant="outline" size="sm" className="flex-1 min-w-[120px]">
+                <Button variant="outline" size="sm" className="flex-1 min-w-[120px] hover:bg-amber-700 hover:text-white">
                   <Flag className="h-4 w-4 mr-2" />
-                  Report
+                  {pageTranslations["report"]}
                 </Button>
               </div>
             </div>

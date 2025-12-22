@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const propertySearchSchema = z.object({
-    query: z.string().optional(),
+    q: z.string().optional(),
     type: z.enum(["sale", "rent", "new_launch", "hostels"]),
     // Filters
     region: z.string(),

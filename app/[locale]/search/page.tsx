@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import { PropertyGrid } from "@/components/property-grid";
 import { searchListings } from "@/lib/db/listings";
 import type { CurrencyCode, ListingKind, ListingStatus } from "@/lib/types/database";
-import { TranslationProvider } from "@/context/TranslationContext";
 import { getLocale, getMessages } from "next-intl/server";
+import { TranslationProvider } from "@/context/TranslationContext";
 
 interface SearchPageProps {
   searchParams: Promise<{
@@ -24,24 +24,24 @@ async function SearchResults({ searchParams }: SearchPageProps) {
   // Determine locale and translations
   const locale = await getLocale();
   const translations = await getMessages({ locale });
-
+  // Extract search parameters
   const params = await searchParams;
-
+  // Fetch search results from the database
   const searchResults = await searchListings({
     q: params.q || null,
     kind: (params.type as ListingKind) || null,
     region_id: params.region ? parseInt(params.region) : null,
     township_id: params.township ? parseInt(params.township) : null,
     property_type_id: params.property_type
-      ? parseInt(params.property_type)
+      ? params.property_type === "all" ? 0 : parseInt(params.property_type)
       : null,
-    min_bed: params.minBed ? parseInt(params.minBed) : null,
-    max_bed: params.maxBed ? parseInt(params.maxBed) : null,
-    price_from: params.price_from ? parseFloat(params.price_from) : null,
-    price_to: params.price_to ? parseFloat(params.price_to) : null,
+    min_bed: params.minBed ? params.minBed === "min" ? 0 : parseInt(params.minBed) : null,
+    max_bed: params.maxBed ? params.maxBed === "max" ? 0 : parseInt(params.maxBed) : null,
+    price_from: params.price_from ? params.price_from === "min" ? 0 : parseFloat(params.price_from) : null,
+    price_to: params.price_to ? params.price_to === "max" ? 0 : parseFloat(params.price_to) : null,
     limit: 24,
   });
-
+  // Map search results to ensure proper typing and default values
   const listings = searchResults.map((result) => ({
     ...result,
     kind: (result.kind as ListingKind) || "defaultKind" as ListingKind, // Ensure kind is cast to ListingKind
@@ -65,23 +65,23 @@ async function SearchResults({ searchParams }: SearchPageProps) {
     agency_id: result.agency_id || null, // Provide default or mapped value
     owner_user_id: result.owner_user_id || null, // Provide default or mapped value
   }));
-  console.log("Listings:", listings);
+  console.log("Listings found:", listings);
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8 max-w-7xl">
       <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-bold mb-2">
           {params.q
-            ? `"${params.q}" အတွက် ရှာဖွေမှု ရလဒ်များ`
-            : "ကြော်ငြာများ"}
+            ? translations['searchResultsPage']['searchResultsFor'].replace('{query}', params.q)
+            : translations['searchResultsPage']['advertisement']}
         </h1>
         {listings.length > 0 && (
           <p className="text-muted-foreground">
-            {listings.length} ခု တွေ့ရှိပါသည်
+            {translations['searchResultsPage']['found'].replace('{count}', listings.length.toString())}
           </p>
         )}
       </div>
-      <TranslationProvider translations={translations['featuredListingComponent']}>
+      <TranslationProvider translations={translations['propertyDetailsPage']}>
         <PropertyGrid listings={listings} />
       </TranslationProvider>
     </div>

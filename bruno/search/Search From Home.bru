@@ -1,0 +1,22 @@
+meta {
+  name: Search From Home
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:3000/api/listings/search?q=condo&region_id=1&min_bed=2
+  body: none
+  auth: inherit
+}
+
+params:query {
+  q: condo
+  region_id: 1
+  min_bed: 2
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

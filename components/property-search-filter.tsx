@@ -1,37 +1,29 @@
 "use client";
 
 import * as React from "react";
-import { Search, X } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { ControllerRenderProps, FieldValues } from "react-hook-form";
+import type { ControllerRenderProps } from "react-hook-form";
+import { Search, X } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
+// components
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormControl,
-} from "@/components/ui/form";
-
-import { cn } from "@/lib/utils";
-import { OutputOption, SETTINGS, toSelectOptions } from "@/lib/types/settings";
-
-import {
-  propertySearchSchema,
-  PropertySearchForm,
-} from "@/lib/validations/property-search";
-import { useTranslations } from "@/context/TranslationContext";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "./ui/input-group";
 
+// lib & hooks
+import { cn } from "@/lib/utils";
+import { OutputOption, SETTINGS, toSelectOptions } from "@/lib/types/settings";
+import { PropertySearchForm, propertySearchSchema } from "@/lib/validations/property-search";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// context
+import { useTranslations } from "@/context/TranslationContext";
+import { redirect, useRouter } from "@/i18n/navigation";
+import { features } from "process";
+
+
+// Props
 interface PropertySearchFilterProps {
   className?: string;
   locale?: "en" | "my";
@@ -42,6 +34,7 @@ interface SelectOptionElementProps {
   field: ControllerRenderProps<PropertySearchForm, keyof PropertySearchForm>;
 }
 
+// Select Option Element
 export const SelectOptionElement: React.FC<SelectOptionElementProps> = ({ options, field }) => {
   return (
     <Select value={field.value} onValueChange={field.onChange}>
@@ -59,38 +52,25 @@ export const SelectOptionElement: React.FC<SelectOptionElementProps> = ({ option
   );
 };
 
-export function PropertySearchFilter({
-  className,
-  locale
-}: PropertySearchFilterProps) {
-  // State for advanced filters
-  const [showAdvanced, setShowAdvanced] = React.useState<boolean>(false);
-  // Translations
+// Property Search Filter Component
+export function PropertySearchFilter({ className, locale }: PropertySearchFilterProps) {
+
+  // variables
   const translations = useTranslations();
+  const [showAdvanced, setShowAdvanced] = React.useState<boolean>(false);
+  const router = useRouter();
+
   // Form setup
   const form = useForm<PropertySearchForm>({
     resolver: zodResolver(propertySearchSchema),
-    defaultValues: {
-      type: "sale",
-      // Filters
-      region: "all",
-      township: "all",
-      // Options
-      propertyType: "all",
-      hostelType: "all",
-      hostelFormat: "all",
-      // beds
-      minBed: "min",
-      maxBed: "max",
-      // prices
-      priceFrom: "0",
-      priceTo: "max",
-    },
+    defaultValues: { type: "sale", region: "0", township: "0", propertyType: "0", hostelType: "0", hostelFormat: "0", minBed: "0", maxBed: "0", priceFrom: "0", priceTo: "0", q: "" },
   });
 
+  // Watch type to conditionally render fields
   const type = form.watch("type");
   const isHostel = type === "hostels";
 
+  // Select options
   const propertyTypes = toSelectOptions(SETTINGS.PROPERTY_TYPES, locale ?? "en");
   const hostelTypes = toSelectOptions(SETTINGS.HOSTEL_TYPES, locale ?? "en");
   const hostelFormats = toSelectOptions(SETTINGS.HOSTEL_FORMATS, locale ?? "en");
@@ -100,16 +80,37 @@ export function PropertySearchFilter({
   const kindOptions = toSelectOptions(SETTINGS.KIND_OPTIONS, locale ?? "en");
   const townshipOptions = toSelectOptions(SETTINGS.TOWNSHIP_OPTIONS, locale ?? "en");
 
+  // Helper function to filter options dynamically
+  const filterOptions = (options: OutputOption[], locale: "en" | "my", exclude: Record<string, string>) => {
+    const labelToExclude = exclude[locale];
+    return options.filter((option) => option.label !== labelToExclude);
+  };
+  // Generate filtered options
+  const generateFilteredOptions = (options: OutputOption[], locale: "en" | "my") => ({
+    exclude: (excludeLabels: Record<string, string>) => filterOptions(options, locale, excludeLabels),
+  });
+  // Filtered options
+  const bedOptionsFiltered = generateFilteredOptions(bedOptions, locale ?? "en");
+  const priceOptionsFiltered = generateFilteredOptions(priceOptions, locale ?? "en");
+
+  // Final options excluding "Min" and "Max"
+  const minBedOptions = bedOptionsFiltered.exclude({ en: "Max Bed", my: "အိပ်ခန်း (အများဆုံး)" });
+  const maxBedOptions = bedOptionsFiltered.exclude({ en: "Min Bed", my: "အိပ်ခန်း (အနည်းဆုံး)" });
+  const minPriceOptions = priceOptionsFiltered.exclude({ en: "Price (To)", my: "ဈေးနှုန်း (အတွင်း)" });
+  const maxPriceOptions = priceOptionsFiltered.exclude({ en: "Price (From)", my: "ဈေးနှုန်း (မှ)" });
+
+  // Form submit handler
   const onSubmit = (data: PropertySearchForm) => {
     const params = new URLSearchParams();
-
     Object.entries(data).forEach(([key, value]) => {
       if (value && value !== "0") {
         params.set(key, value);
       }
     });
-
-    window.location.href = `/search?${params.toString()}`;
+    router.push({
+      pathname: '/search',
+      query: { features: 'true', ...Object.fromEntries(params) }
+    });
   };
 
   return (
@@ -129,7 +130,7 @@ export function PropertySearchFilter({
             {/* Search */}
             <FormField
               control={form.control}
-              name="query"
+              name="q"
               render={({ field }) => (
                 <FormItem
                   className="col-span-1 md:col-span-2">
@@ -139,7 +140,7 @@ export function PropertySearchFilter({
                       <InputGroupInput
                         {...field}
                         placeholder={translations ? translations["keywordPlaceholder"] : "Enter keyword or ad number"}
-                        className="h-12 md:h-14" />
+                        className="h-12 md:h-14 placeholder:text-foreground" />
                       {field.value ?
                         <InputGroupAddon align="inline-end">
                           <InputGroupButton
@@ -244,10 +245,7 @@ export function PropertySearchFilter({
                   name="minBed"
                   render={({ field }) => (
                     <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                      <SelectOptionElement
-                        options={bedOptions.filter((b) => b.value !== "max")}
-                        field={field}
-                      />
+                      <SelectOptionElement options={minBedOptions} field={field} />
                     </FormItem>
                   )}
                 />
@@ -257,10 +255,7 @@ export function PropertySearchFilter({
                   name="maxBed"
                   render={({ field }) => (
                     <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                      <SelectOptionElement
-                        options={bedOptions.filter((b) => b.value !== "min")}
-                        field={field}
-                      />
+                      <SelectOptionElement options={maxBedOptions} field={field} />
                     </FormItem>
                   )}
                 />
@@ -272,10 +267,7 @@ export function PropertySearchFilter({
               name="priceFrom"
               render={({ field }) => (
                 <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                  <SelectOptionElement
-                    options={priceOptions.filter((p) => p.value !== "max")}
-                    field={field}
-                  />
+                  <SelectOptionElement options={minPriceOptions} field={field} />
                 </FormItem>
               )}
             />
@@ -285,17 +277,14 @@ export function PropertySearchFilter({
               name="priceTo"
               render={({ field }) => (
                 <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                  <SelectOptionElement
-                    options={priceOptions.filter((p) => p.value !== "0")}
-                    field={field}
-                  />
+                  <SelectOptionElement options={maxPriceOptions} field={field} />
                 </FormItem>
               )}
             />
           </div>
 
           {/* Mobile Advanced Toggle & Submit Button */}
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 p-4 md:p-6 border-t border-border/50 bg-muted/30">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 p-4 md:p-6 border-% border-border/50 bg-muted/30">
             <Button
               type="button"
               variant="outline"
