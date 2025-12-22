@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "./logout-button";
 import LocaleSwitcher from "./lang/LocaleSwitcher";
+import { ThemeSwitcher } from "./theme-switcher";
 
 export async function AuthButton() {
   const supabase = await createClient();
@@ -14,6 +15,7 @@ export async function AuthButton() {
 
   return user ? (
     <div className="flex items-center gap-4">
+      <ThemeSwitcher />
       <LocaleSwitcher className="border-none outline-none" size="sm" />
       <Button asChild size="sm" variant={"outline"}>
         <Link href="/protected">Dashboard</Link>
@@ -22,6 +24,7 @@ export async function AuthButton() {
     </div>
   ) : (
     <div className="flex gap-2">
+      <ThemeSwitcher />
       <LocaleSwitcher size="sm" />
       <Button asChild size="sm" variant={"outline"}>
         <Link href="/auth/login">Sign in</Link>

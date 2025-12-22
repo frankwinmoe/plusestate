@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import type { ListingWithRelations } from "@/lib/types/database";
 import { useTranslations } from "@/context/TranslationContext";
 import { useLocale } from "next-intl";
+import { usePriceFormatter } from "@/hooks/usePriceFormatter";
 
 interface PropertyCardProps {
   listing: ListingWithRelations;
@@ -17,9 +18,12 @@ interface PropertyCardProps {
 }
 
 export function PropertyCard({ listing, className }: PropertyCardProps) {
+
+  const { formatPrice } = usePriceFormatter();
   const [isFavorite, setIsFavorite] = React.useState(false);
+  const [formattedPrice, setFormattedPrice] = React.useState<string | null>(null);
   const [imageError, setImageError] = React.useState(false);
-  // get translations
+
   const locale = useLocale();
   const translations = useTranslations();
 
@@ -28,15 +32,9 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
       ? listing.images[0].image_url
       : "/placeholder-property.jpg";
 
-  const formatPrice = () => {
-    if (!listing.price_amount) return translations["priceInquiry"];
-    // local formatting for Myanmar Kyat
-    let formatUnit = "en-US";
-    if (locale === "my") formatUnit = "my-MM";
-    // format price with locale
-    const formatted = listing.price_amount.toLocaleString(formatUnit);
-    return `${formatted} ${listing.price_unit_label || translations["currencyUnit"]}`;
-  };
+  React.useEffect(() => {
+    setFormattedPrice(formatPrice(listing.price_amount as number, listing.price_unit_label as string));
+  }, [formatPrice, listing.price_amount, listing.price_unit_label]);
 
   const listingUrl = `/${listing.kind}/${listing.listing_code.replace(/^[A-Z]-/, "")}`;
 
@@ -126,7 +124,7 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
         {/* Price */}
         <div className="mb-4">
           <p className="text-xl md:text-2xl font-bold text-primary">
-            {formatPrice()}
+            {formattedPrice || "Loading..."} {/* Render placeholder during SSR */}
           </p>
           {listing.price_per_sqft && listing.area_sqft ? (
             <p className="text-sm text-muted-foreground mt-1">

@@ -1,17 +1,14 @@
 "use client";
 
+import * as React from "react";
+import { LifeBuoy, List, LucideIcon, Send, SquareTerminal } from "lucide-react";
+
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-} from "@/components/ui/sidebar";
-import { BookOpen, Bot, Frame, LifeBuoy, List, LucideIcon, PieChart, Send, Settings2, SquareTerminal } from "lucide-react";
-import * as React from "react";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
+
 
 interface SidebarData {
   user: {

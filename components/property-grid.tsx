@@ -38,7 +38,7 @@ export function PropertyGrid({
     return (
       <div className={cn("text-center py-12", className)}>
         <p className="text-muted-foreground text-lg">
-          {translations ? translations["featuredListingComponent"]["noListingsFound"] : "No listings found."}
+          {translations ? translations["noListingsFound"] : "No listings found."}
         </p>
       </div>
     );
