@@ -26,6 +26,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useAppContext } from "@/context/AppContext"
 
 export function NavUser({
   user,
@@ -37,6 +38,14 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const appContext = useAppContext();
+  const router = appContext?.router;
+  const supabase = appContext?.supabase;
+
+  const logout = async () => {
+    await supabase?.auth.signOut();
+    router?.push("/auth/login");
+  }
 
   return (
     <SidebarMenu>
@@ -88,7 +97,9 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => logout()}
+            >
               <LogOut />
               Log out
             </DropdownMenuItem>
