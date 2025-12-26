@@ -12,15 +12,10 @@ interface PropertyGridProps {
   loading?: boolean;
 }
 
-export function PropertyGrid({
-  listings,
-  className,
-  loading = false,
-}: PropertyGridProps) {
-
+export function PropertyGrid({ listings, className, loading = false }: PropertyGridProps) {
   // Translations
   const translations = useTranslations();
-
+  // Loading state
   if (loading) {
     return (
       <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6", className)}>
@@ -33,7 +28,7 @@ export function PropertyGrid({
       </div>
     );
   }
-
+  // No listings found
   if (listings.length === 0) {
     return (
       <div className={cn("text-center py-12", className)}>
@@ -43,7 +38,7 @@ export function PropertyGrid({
       </div>
     );
   }
-
+  // Render listings
   return (
     <div
       className={cn(

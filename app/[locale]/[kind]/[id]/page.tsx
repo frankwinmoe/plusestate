@@ -35,7 +35,7 @@ export default async function PropertyDetailsPage({ params }: PropertyDetailsPag
 
   // Increment view count (fire and forget)
   incrementListingViews(listing.id).catch(console.error);
-
+  console.log("Listings data fetched:", listing);
   const mainImage =
     listing.images && listing.images.length > 0
       ? listing.images[0].image_url

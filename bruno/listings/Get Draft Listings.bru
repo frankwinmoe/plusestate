@@ -1,0 +1,16 @@
+meta {
+  name: Get Draft Listings
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{relativeUrl}}/drafts
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

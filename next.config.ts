@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '*',
       },
+      {
+        protocol: 'https',
+        hostname: 'plus-estate.s3.us-east-2.amazonaws.com',
+        pathname: '/**',
+      },
     ],
   },
 };

@@ -1,0 +1,35 @@
+meta {
+  name: Create
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{relativeUrl}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "display_name": "Golden Parami Real Estate",
+    "logo_url": "https://example.com/logo.png",
+    "phone": "+95 9 123 456 789",
+    "email": "info@goldenparami.com"
+  }
+  
+}
+
+script:post-response {
+  expect(res.status).to.equal(201);
+  expect(res.body).to.have.property("id");
+  expect(res.body.display_name).to.be.a("string");
+  
+  bru.setEnvVar("AGENCY_ID", res.body.id);
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

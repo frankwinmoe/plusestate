@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
-import { headers } from 'next/headers';
 import { ThemeProvider } from "next-themes";
+import { notFound } from "next/navigation";
 import "./globals.css";
 
-// Components
-import Navbar from "@/components/navbar";
-
 // i18n
-import { routing } from '@/i18n/routing';
-import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { notFound } from 'next/navigation';
+import { routing } from "@/i18n/routing";
+import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { getMessages } from "next-intl/server";
+
+// Context
+import { AppContextProvider } from "@/context/AppContext";
 
 // Generate static params for locales
 export function generateStaticParams() {
@@ -28,6 +27,7 @@ export const metadata: Metadata = {
   title: "Plus Estate - Real Estate Platform",
   description: "Discover your dream property with Plus Estate, the ultimate real estate platform for buying, selling, and renting homes worldwide.",
 };
+
 // Root layout props
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -36,19 +36,11 @@ interface RootLayoutProps {
 
 export default async function RootLayout({ children, params }: Readonly<RootLayoutProps>) {
   // Validate locale
-  const { locale } = await params; // Removed `await` here
+  const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
 
   // Load locale messages
   const messages = await getMessages({ locale });
-
-  // Extract the full pathname from headers
-  const currentHeaders = headers();
-  const referer = (await currentHeaders).get('referer') || defaultUrl;
-  const url = new URL(referer);
-  const pathname = url.pathname;
-  const pathnameList = pathname.split('/');
-  const isProtectedRoute = pathnameList.includes("protected");
 
   // Render layout
   return (
@@ -56,12 +48,7 @@ export default async function RootLayout({ children, params }: Readonly<RootLayo
       <body className="antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <main className="min-h-screen flex flex-col items-center">
-              <div className="flex-1 w-full flex flex-col items-center">
-                {!isProtectedRoute && <Navbar />}
-                {children}
-              </div>
-            </main>
+            <AppContextProvider>{children}</AppContextProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

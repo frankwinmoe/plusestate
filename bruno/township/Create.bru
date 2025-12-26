@@ -1,0 +1,31 @@
+meta {
+  name: Create
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{relativeUrl}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "region_id": 1,
+    "name_mm": "Test MM",
+    "name_en": "Test EN"
+  }
+}
+
+script:post-response {
+  expect(res.status).to.equal(201);
+  expect(res.body).to.have.property("id");
+  
+  bru.setEnvVar("TOWNSHIP_ID", res.body.id);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

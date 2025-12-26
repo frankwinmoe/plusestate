@@ -1,3 +1,4 @@
+"use client";
 import { SectionCards } from "@/components/section-cards";
 import SidebarHeader from "@/components/sidebar-header";
 
@@ -6,6 +7,7 @@ const breadcrumb = [
 ]
 
 export default function ProtectedPage() {
+
   return (
     <div>
       <SidebarHeader breadcrumb={breadcrumb} />

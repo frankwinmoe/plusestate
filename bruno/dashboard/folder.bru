@@ -1,8 +1,11 @@
 meta {
   name: dashboard
-  seq: 3
 }
 
 auth {
-  mode: inherit
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
 }

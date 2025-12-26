@@ -1,0 +1,26 @@
+meta {
+  name: Edit
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{relativeUrl}}/{{AGENCY_ID}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "display_name": "Golden Parami Property Edit",
+    "logo_url": "https://example.com/new-logo.png",
+    "phone": "+95 9 987 654 321",
+    "email": "contact@goldenparami.com"
+  }
+
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,25 @@
+meta {
+  name: Get By ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{relativeUrl}}/{{AGENCY_ID}}
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  expect(res.status).to.equal(200);
+  expect(res.body).to.have.property("id");
+  expect(res.body.display_name).to.be.a("string");
+  
+  bru.setEnvVar("AGENCY_ID", res.body.id);
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

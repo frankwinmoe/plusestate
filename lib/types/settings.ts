@@ -5,6 +5,9 @@ export interface Option {
     value: string;
     label_mm: string;
     label_en: string;
+    regionId?: number;
+    sortOrder?: number;
+    
 }
 
 const propertyTypes: Option[] = [

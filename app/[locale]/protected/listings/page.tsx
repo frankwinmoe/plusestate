@@ -5,7 +5,6 @@ const breadcrumb = [
     { title: "Listings", href: "/protected/listings" },
 ]
 
-
 const Listings = () => {
     return (
         <div>

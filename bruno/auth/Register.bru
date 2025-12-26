@@ -1,0 +1,27 @@
+meta {
+  name: Register
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{relativeUrl}}/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "hanhtetsan13@gmail.com",
+    "password": "pass123"
+  }
+}
+
+vars:pre-request {
+  PASSWORD: P@ssw0rd2006
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

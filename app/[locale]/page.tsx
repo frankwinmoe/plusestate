@@ -1,10 +1,15 @@
+// libraries
+import { ArrowRight } from "lucide-react";
+import { getLocale, getMessages } from "next-intl/server";
+
+// components
 import { PropertySearchFilter } from "@/components/property-search-filter";
 import { PropertyGrid } from "@/components/property-grid";
-import { getRecentListings, getFeaturedListings } from "@/lib/db/listings";
-import { getLocale, getMessages } from "next-intl/server";
-import { TranslationProvider } from "@/context/TranslationContext";
-import { ArrowRight } from "lucide-react";
+
+// @ libraries
 import { Link } from "@/i18n/navigation";
+import { getRecentListings, getFeaturedListings } from "@/lib/db/listings";
+import { TranslationProvider } from "@/context/TranslationContext";
 
 
 export default async function Home() {

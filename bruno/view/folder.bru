@@ -1,0 +1,15 @@
+meta {
+  name: view
+}
+
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+vars:pre-request {
+  relativeUrl: {{BASE_URL}}/views
+}
