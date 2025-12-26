@@ -1,0 +1,25 @@
+meta {
+  name: Create
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{relativeUrl}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name_mm": "Test Region MM",
+    "name_en": "Test Region EN",
+    "sort_order": 1
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

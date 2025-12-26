@@ -1,0 +1,63 @@
+meta {
+  name: Create Listings
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{relativeUrl}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "listing_code": "MDG-001",
+    "kind": "sale",
+    "status": "published",
+    "is_featured": true,
+  
+    "title": "မြောက်ဒဂုံ (၃၇) ရပ်ကွက် တပင်ရွှေထီးကျောကပ် တိုက်သစ် 2.5RC",
+    "description": "မြောက်ဒဂုံမြို့နယ် (၃၇) ရပ်ကွက်၊ တပင်ရွှေထီးလမ်းကျောကပ် တည်ရှိသော တိုက်သစ် 2.5RC ဖြစ်ပါသည်။ ပြင်ဆင်ပြီး အသင့်နေ၊ ဂရန်အမည်ပေါက် အိမ်ဖြစ်ပါသည်။",
+  
+    "region_id": 1,
+    "township_id": 20,
+    "property_type_id": 3,
+  
+    "bedrooms": 4,
+    "bathrooms": null,
+    "floor_label": "2.5RC",
+  
+    "width_ft": 18,
+    "length_ft": 55,
+    "area_sqft": 990,
+    "area_label": "Building area",
+  
+    "currency": "MMK",
+    "price_amount": 9500,
+    "price_unit_label": "Lakhs",
+    "price_per_sqft": 959596.96,
+    
+    "lat": "16.8793192",
+    "lng": "96.1898087",
+  
+    "address_text": "တပင်ရွှေထီးလမ်းကျောကပ်, (၃၇) ရပ်ကွက်, မြောက်ဒဂုံမြို့နယ်",
+  
+    "agency_id": "461220a1-58b3-4ff9-9bde-f377b4846110"
+  }
+  
+}
+
+script:post-response {
+  expect(res.status).to.equal(201);
+  expect(res.body).to.have.property("id");
+  expect(res.body.listing_code).to.be.a("string");
+  
+  bru.setEnvVar("CODE", res.body.listing_code);
+  bru.setEnvVar("LISTING_ID", res.body.id);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

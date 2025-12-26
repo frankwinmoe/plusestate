@@ -1,5 +1,5 @@
 meta {
-  name: search
+  name: agencies
 }
 
 auth {
@@ -8,4 +8,8 @@ auth {
 
 auth:bearer {
   token: {{ACCESS_TOKEN}}
+}
+
+vars:pre-request {
+  relativeUrl: {{BASE_URL}}/agencies
 }
