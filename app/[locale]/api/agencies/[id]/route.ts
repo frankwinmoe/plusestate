@@ -19,7 +19,7 @@ export async function GET(
     return Response.json(agency);
 }
 
-export async function PATCH(
+export async function PUT(
     req: Request,
     context: { params: Promise<{ id: string }> }
 ) {

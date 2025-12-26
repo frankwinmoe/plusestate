@@ -2,7 +2,7 @@
 import { createClient } from "@/lib/supabase/server";
 import RegionsService from "@/lib/services/region";
 
-export async function GET(_: Request, context: { params: Promise<{ id: number }> }) {
+export async function GET(_: Request, context: { params: Promise<{ locale: string; id: string }> }) {
     const { id } = await context.params;
     const supabase = await createClient();
     const service = new RegionsService(supabase);
@@ -13,14 +13,21 @@ export async function GET(_: Request, context: { params: Promise<{ id: number }>
             { status: 400 }
         );
     }
-    const region = await service.getById(id);
+    const regionId = parseInt(id, 10);
+    if (isNaN(regionId)) {
+        return Response.json(
+            { error: "Region ID must be a number." },
+            { status: 400 }
+        );
+    }
+    const region = await service.getById(regionId);
     if (!region) {
         return Response.json({ error: "Not found" }, { status: 404 });
     }
     return Response.json(region);
 }
 
-export async function PATCH(req: Request, context: { params: Promise<{ id: number }> }) {
+export async function PUT(req: Request, context: { params: Promise<{ locale: string; id: string }> }) {
     const { id } = await context.params;
     const supabase = await createClient();
     const service = new RegionsService(supabase);
@@ -32,11 +39,18 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: numbe
             { status: 400 }
         );
     }
-    const region = await service.update(id, body);
+    const regionId = parseInt(id, 10);
+    if (isNaN(regionId)) {
+        return Response.json(
+            { error: "Region ID must be a number." },
+            { status: 400 }
+        );
+    }
+    const region = await service.update(regionId, body);
     return Response.json(region);
 }
 
-export async function DELETE(_: Request, context: { params: Promise<{ id: number }> }) {
+export async function DELETE(_: Request, context: { params: Promise<{ locale: string; id: string }> }) {
     const { id } = await context.params;
     const supabase = await createClient();
     const service = new RegionsService(supabase);
@@ -47,6 +61,13 @@ export async function DELETE(_: Request, context: { params: Promise<{ id: number
             { status: 400 }
         );
     }
-    await service.delete(id);
+    const regionId = parseInt(id, 10);
+    if (isNaN(regionId)) {
+        return Response.json(
+            { error: "Region ID must be a number." },
+            { status: 400 }
+        );
+    }
+    await service.delete(regionId);
     return Response.json({ success: true });
 }

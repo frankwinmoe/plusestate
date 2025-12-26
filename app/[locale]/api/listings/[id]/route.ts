@@ -15,26 +15,28 @@ export async function GET(_: Request, context: { params: Promise<{ id: string }>
     return Response.json(listing);
 }
 
-export async function PATCH(
+export async function PUT(
     req: Request,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await context.params;
     const supabase = await createClient();
     const service = new ListingsService(supabase);
 
     const updates = await req.json();
-    const listing = await service.update(params.id, updates);
+    const listing = await service.update(id, updates);
 
     return Response.json(listing);
 }
 
 export async function DELETE(
     _: Request,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await context.params;
     const supabase = await createClient();
     const service = new ListingsService(supabase);
 
-    await service.delete(params.id);
+    await service.delete(id);
     return Response.json({ success: true });
 }

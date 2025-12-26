@@ -2,26 +2,22 @@
 import { createClient } from "@/lib/supabase/server";
 import ListingsService from "@/lib/services/listings";
 
-export async function PATCH(
-    req: Request,
-    { params }: { params: { imageId: string } }
-) {
+export async function PUT(req: Request, context: { params: Promise<{ imageId: string }> }) {
+    const { imageId } = await context.params;
     const supabase = await createClient();
     const service = new ListingsService(supabase);
 
     const updates = await req.json();
-    const image = await service.updateImage(params.imageId, updates);
+    const image = await service.updateImage(imageId, updates);
 
     return Response.json(image);
 }
 
-export async function DELETE(
-    _: Request,
-    { params }: { params: { imageId: string } }
-) {
+export async function DELETE(_: Request, context: { params: Promise<{ imageId: string }> }) {
+    const { imageId } = await context.params;
     const supabase = await createClient();
     const service = new ListingsService(supabase);
 
-    await service.deleteImage(params.imageId);
+    await service.deleteImage(imageId);
     return Response.json({ success: true });
 }

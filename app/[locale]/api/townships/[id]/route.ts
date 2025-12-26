@@ -2,7 +2,7 @@
 import { createClient } from "@/lib/supabase/server";
 import TownshipsService from "@/lib/services/township";
 
-export async function GET(_: Request, context: { params: Promise<{ id: number }> }) {
+export async function GET(_: Request, context: { params: Promise<{ locale: string; id: string }> }) {
     const { id } = await context.params;
     const supabase = await createClient();
     const service = new TownshipsService(supabase);
@@ -13,14 +13,21 @@ export async function GET(_: Request, context: { params: Promise<{ id: number }>
             { status: 400 }
         );
     }
-    const township = await service.getById(id);
+    const townshipId = parseInt(id, 10);
+    if (isNaN(townshipId)) {
+        return Response.json(
+            { error: "Township ID must be a number." },
+            { status: 400 }
+        );
+    }
+    const township = await service.getById(townshipId);
     if (!township) {
         return Response.json({ error: "Not found" }, { status: 404 });
     }
     return Response.json(township);
 }
 
-export async function PATCH(req: Request, context: { params: Promise<{ id: number }> }) {
+export async function PUT(req: Request, context: { params: Promise<{ locale: string; id: string }> }) {
     const { id } = await context.params;
     const supabase = await createClient();
     const service = new TownshipsService(supabase);
@@ -32,11 +39,18 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: numbe
             { status: 400 }
         );
     }
-    const township = await service.update(id, body);
+    const townshipId = parseInt(id, 10);
+    if (isNaN(townshipId)) {
+        return Response.json(
+            { error: "Township ID must be a number." },
+            { status: 400 }
+        );
+    }
+    const township = await service.update(townshipId, body);
     return Response.json(township);
 }
 
-export async function DELETE(_: Request, context: { params: Promise<{ id: number }> }) {
+export async function DELETE(_: Request, context: { params: Promise<{ locale: string; id: string }> }) {
     const { id } = await context.params;
     const supabase = await createClient();
     const service = new TownshipsService(supabase);
@@ -47,6 +61,13 @@ export async function DELETE(_: Request, context: { params: Promise<{ id: number
             { status: 400 }
         );
     }
-    await service.delete(id);
+    const townshipId = parseInt(id, 10);
+    if (isNaN(townshipId)) {
+        return Response.json(
+            { error: "Township ID must be a number." },
+            { status: 400 }
+        );
+    }
+    await service.delete(townshipId);
     return Response.json({ success: true });
 }
