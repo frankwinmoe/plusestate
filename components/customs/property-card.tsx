@@ -3,7 +3,14 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Building2, Maximize2, Heart, Search } from "lucide-react";
+import {
+  MapPin,
+  Building2,
+  Maximize2,
+  Heart,
+  Search,
+  PlusIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -11,6 +18,11 @@ import type { ListingWithRelations } from "@/lib/types/database";
 import { useTranslations } from "@/context/TranslationContext";
 import { useLocale } from "next-intl";
 import { usePriceFormatter } from "@/hooks/usePriceFormatter";
+import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+} from "@/components/ui/button-group";
 
 interface PropertyCardProps {
   listing: ListingWithRelations;
@@ -18,10 +30,11 @@ interface PropertyCardProps {
 }
 
 export function PropertyCard({ listing, className }: PropertyCardProps) {
-
   const { formatPrice } = usePriceFormatter();
   const [isFavorite, setIsFavorite] = React.useState(false);
-  const [formattedPrice, setFormattedPrice] = React.useState<string | null>(null);
+  const [formattedPrice, setFormattedPrice] = React.useState<string | null>(
+    null,
+  );
   const [imageError, setImageError] = React.useState(false);
 
   const locale = useLocale();
@@ -33,7 +46,12 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
       : "/placeholder-property.jpg";
 
   React.useEffect(() => {
-    setFormattedPrice(formatPrice(listing.price_amount as number, listing.price_unit_label as string));
+    setFormattedPrice(
+      formatPrice(
+        listing.price_amount as number,
+        listing.price_unit_label as string,
+      ),
+    );
   }, [formatPrice, listing.price_amount, listing.price_unit_label]);
 
   const listingUrl = `/${listing.kind}/${listing.listing_code.replace(/^[A-Z]-/, "")}`;
@@ -42,7 +60,7 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
     <div
       className={cn(
         "group bg-card border border-border rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-4",
-        className
+        className,
       )}
     >
       {/* Image Section */}
@@ -52,7 +70,7 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
             variant="destructive"
             className="absolute top-3 left-3 z-10 font-semibold"
           >
-            {translations ? translations['featured'] : "Featured"}
+            {translations ? translations["featured"] : "Featured"}
           </Badge>
         )}
         {!imageError ? (
@@ -97,16 +115,22 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
             <span className="line-clamp-1">
-              {locale === "en" ? listing.township?.name_en || "" : listing.township?.name_mm || ""}
+              {locale === "en"
+                ? listing.township?.name_en || ""
+                : listing.township?.name_mm || ""}
               {listing.township && listing.region && " | "}
-              {locale === "en" ? listing.region?.name_en || "" : listing.region?.name_mm || ""}
+              {locale === "en"
+                ? listing.region?.name_en || ""
+                : listing.region?.name_mm || ""}
             </span>
           </div>
 
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
             <Building2 className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
             <span>
-              {locale === "en" ? listing.property_type?.name_en || "" : listing.property_type?.name_mm || ""}
+              {locale === "en"
+                ? listing.property_type?.name_en || ""
+                : listing.property_type?.name_mm || ""}
               {listing.floor_label && ` | ${listing.floor_label}`}
             </span>
           </div>
@@ -115,19 +139,22 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
             <div className="flex items-start gap-2 text-sm text-muted-foreground">
               <Maximize2 className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
               <span>
-                {translations['squareFeet'].replace('{area_sqft}', listing.area_sqft.toString())}
+                {translations["squareFeet"].replace(
+                  "{area_sqft}",
+                  listing.area_sqft.toString(),
+                )}
               </span>
             </div>
           )}
         </div>
 
         {/* Price */}
-        <div className="mb-4">
+        <div className="mb-4 pb-2">
           <p className="text-xl md:text-2xl font-bold text-primary">
-            {formattedPrice || "Loading..."} {/* Render placeholder during SSR */}
+            {formattedPrice || "Loading..."}{" "}
           </p>
           {listing.price_per_sqft && listing.area_sqft ? (
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-4">
               တစ်စတုရန်းပေ {listing.price_per_sqft.toFixed(1)} သိန်း (ကျပ်)
             </p>
           ) : null}
@@ -135,9 +162,9 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
 
         {/* Agency Logo - Desktop */}
         {listing.agency?.logo_url && (
-          <div className="hidden md:block mb-4 pt-4 border-t border-border">
+          <div className="hidden md:block border-t border-border">
             <Link
-              href={`/ agency / ${listing.agency.id}`}
+              href={`/agency/${listing.agency.id}`}
               className="inline-block"
             >
               <Image
@@ -153,46 +180,42 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t border-border flex-wrap">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1 group/btn"
-            onClick={(e) => {
-              e.preventDefault();
-              // TODO: Implement compare functionality
-            }}
-          >
-            <span className="group-hover/btn:scale-110 transition-transform">
-              +
-            </span>
-            <span className="ml-2">{translations ? translations['compare'] : "Compare"}</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1"
-            onClick={(e) => {
-              e.preventDefault();
-              setIsFavorite(!isFavorite);
-              // TODO: Implement favorite functionality
-            }}
-          >
-            <Heart
-              className={cn(
-                "h-4 w-4 mr-2 transition-colors",
-                isFavorite && "fill-destructive text-destructive"
-              )}
-            />
-            <span>{translations ? translations['favorite'] : "Favorite"}</span>
-          </Button>
-          <Button
-            size="sm"
-            className="flex-1 bg-primary hover:bg-primary/90"
-            asChild
-          >
+          <ButtonGroup className="w-full">
+            <Button
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+              }}
+              className="flex-1"
+            >
+              <PlusIcon className="h-4 w-4 mr-2 transition-colors" />
+              <span>{translations ? translations["compare"] : "Compare"}</span>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsFavorite(!isFavorite);
+              }}
+              className="flex-1"
+            >
+              <Heart
+                className={cn(
+                  "h-4 w-4 mr-2 transition-colors",
+                  isFavorite && "fill-destructive text-destructive",
+                )}
+              />
+              <span>
+                {translations ? translations["favorite"] : "Favorite"}
+              </span>
+            </Button>
+          </ButtonGroup>
+          <Button className="flex-1 bg-primary hover:bg-primary/90" asChild>
             <Link href={listingUrl}>
               <Search className="h-4 w-4 mr-2" />
-              <span>{translations ? translations['priceInquiry'] : "Price Inquiry"}</span>
+              <span>
+                {translations ? translations["priceInquiry"] : "Price Inquiry"}
+              </span>
             </Link>
           </Button>
         </div>
@@ -200,4 +223,3 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
     </div>
   );
 }
-

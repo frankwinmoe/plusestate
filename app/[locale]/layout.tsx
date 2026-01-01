@@ -25,7 +25,8 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Plus Estate - Real Estate Platform",
-  description: "Discover your dream property with Plus Estate, the ultimate real estate platform for buying, selling, and renting homes worldwide.",
+  description:
+    "Discover your dream property with Plus Estate, the ultimate real estate platform for buying, selling, and renting homes worldwide.",
 };
 
 // Root layout props
@@ -34,7 +35,10 @@ interface RootLayoutProps {
   params: Promise<{ locale: string }>;
 }
 
-export default async function RootLayout({ children, params }: Readonly<RootLayoutProps>) {
+export default async function RootLayout({
+  children,
+  params,
+}: Readonly<RootLayoutProps>) {
   // Validate locale
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
@@ -47,7 +51,12 @@ export default async function RootLayout({ children, params }: Readonly<RootLayo
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
             <AppContextProvider>{children}</AppContextProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

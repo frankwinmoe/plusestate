@@ -2,15 +2,22 @@
 
 import React from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/customs/app-sidebar";
 import { useAppContext } from "@/context/AppContext";
+import Loader from "@/components/customs/loader";
 
-export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
+export default function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const appContext = useAppContext();
   const router = appContext?.router;
   // Check if the user is authenticated
   const { checkAuth } = appContext!;
-  const [authenticated, setAuthenticated] = React.useState<boolean | null>(null); // null for initial loading state
+  const [authenticated, setAuthenticated] = React.useState<boolean | null>(
+    null,
+  ); // null for initial loading state
 
   React.useEffect(() => {
     const checkAuthentication = async () => {
@@ -28,15 +35,17 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   // Show a loading state while checking authentication
   if (authenticated === null) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex w-screen h-screen justify-center items-center">
+        <Loader loadingText="Loading..." />
+      </div>
+    );
   }
 
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        {children}
-      </SidebarInset>
+      <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );
 }

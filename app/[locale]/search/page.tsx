@@ -1,7 +1,11 @@
 import { Suspense } from "react";
-import { PropertyGrid } from "@/components/property-grid";
+import { PropertyGrid } from "@/components/customs/property-grid";
 import { searchListings } from "@/lib/db/listings";
-import type { CurrencyCode, ListingKind, ListingStatus } from "@/lib/types/database";
+import type {
+  CurrencyCode,
+  ListingKind,
+  ListingStatus,
+} from "@/lib/types/database";
 import { getLocale, getMessages } from "next-intl/server";
 import { TranslationProvider } from "@/context/TranslationContext";
 
@@ -33,19 +37,38 @@ async function SearchResults({ searchParams }: SearchPageProps) {
     region_id: params.region ? parseInt(params.region) : null,
     township_id: params.township ? parseInt(params.township) : null,
     property_type_id: params.property_type
-      ? params.property_type === "all" ? 0 : parseInt(params.property_type)
+      ? params.property_type === "all"
+        ? 0
+        : parseInt(params.property_type)
       : null,
-    min_bed: params.minBed ? params.minBed === "min" ? 0 : parseInt(params.minBed) : null,
-    max_bed: params.maxBed ? params.maxBed === "max" ? 0 : parseInt(params.maxBed) : null,
-    price_from: params.price_from ? params.price_from === "min" ? 0 : parseFloat(params.price_from) : null,
-    price_to: params.price_to ? params.price_to === "max" ? 0 : parseFloat(params.price_to) : null,
+    min_bed: params.minBed
+      ? params.minBed === "min"
+        ? 0
+        : parseInt(params.minBed)
+      : null,
+    max_bed: params.maxBed
+      ? params.maxBed === "max"
+        ? 0
+        : parseInt(params.maxBed)
+      : null,
+    price_from: params.price_from
+      ? params.price_from === "min"
+        ? 0
+        : parseFloat(params.price_from)
+      : null,
+    price_to: params.price_to
+      ? params.price_to === "max"
+        ? 0
+        : parseFloat(params.price_to)
+      : null,
     limit: 24,
   });
   // Map search results to ensure proper typing and default values
   const listings = searchResults.map((result) => ({
     ...result,
-    kind: (result.kind as ListingKind) || "defaultKind" as ListingKind, // Ensure kind is cast to ListingKind
-    status: (result.status as ListingStatus) || "defaultStatus" as ListingStatus,
+    kind: (result.kind as ListingKind) || ("defaultKind" as ListingKind), // Ensure kind is cast to ListingKind
+    status:
+      (result.status as ListingStatus) || ("defaultStatus" as ListingStatus),
     description: result.description || "",
     bedrooms: result.bedrooms || 0,
     bathrooms: result.bathrooms || 0,
@@ -55,7 +78,7 @@ async function SearchResults({ searchParams }: SearchPageProps) {
     price: result.price || 0,
     created_at: result.created_at || new Date().toISOString(),
     updated_at: result.updated_at || new Date().toISOString(),
-    currency: (result.currency as CurrencyCode) || "USD" as CurrencyCode, // Ensure currency is cast to CurrencyCode
+    currency: (result.currency as CurrencyCode) || ("USD" as CurrencyCode), // Ensure currency is cast to CurrencyCode
     price_per_sqft: result.price_per_sqft || 0,
     address_text: result.address_text || "Unknown Address",
     lat: result.lat || 0,
@@ -65,23 +88,28 @@ async function SearchResults({ searchParams }: SearchPageProps) {
     agency_id: result.agency_id || null, // Provide default or mapped value
     owner_user_id: result.owner_user_id || null, // Provide default or mapped value
   }));
-  console.log("Listings found:", listings);
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8 max-w-7xl">
       <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-bold mb-2">
           {params.q
-            ? translations['searchResultsPage']['searchResultsFor'].replace('{query}', params.q)
-            : translations['searchResultsPage']['advertisement']}
+            ? translations["searchResultsPage"]["searchResultsFor"].replace(
+                "{query}",
+                params.q,
+              )
+            : translations["searchResultsPage"]["advertisement"]}
         </h1>
         {listings.length > 0 && (
           <p className="text-muted-foreground">
-            {translations['searchResultsPage']['found'].replace('{count}', listings.length.toString())}
+            {translations["searchResultsPage"]["found"].replace(
+              "{count}",
+              listings.length.toString(),
+            )}
           </p>
         )}
       </div>
-      <TranslationProvider translations={translations['propertyDetailsPage']}>
+      <TranslationProvider translations={translations["propertyDetailsPage"]}>
         <PropertyGrid listings={listings} />
       </TranslationProvider>
     </div>
@@ -95,4 +123,3 @@ export default function SearchPage(props: SearchPageProps) {
     </Suspense>
   );
 }
-

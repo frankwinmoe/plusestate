@@ -1,23 +1,18 @@
 "use client";
-import { SectionCards } from "@/components/section-cards";
-import SidebarHeader from "@/components/sidebar-header";
-
-const breadcrumb = [
-  { title: "Dashboard", href: "/protected" },
-]
+import React from "react";
+import { useRouter } from "@/i18n/navigation";
 
 export default function ProtectedPage() {
+  // redirect user to the dashboard page if they access /protected directly
+  const router = useRouter();
+
+  React.useEffect(() => {
+    router.replace("/protected/dashboard");
+  }, [router]);
 
   return (
-    <div>
-      <SidebarHeader breadcrumb={breadcrumb} />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="@container/main flex flex-1 flex-col gap-2">
-          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-            <SectionCards />
-          </div>
-        </div>
-      </div>
+    <div className="flex w-[calc(100vw-16rem)] h-screen justify-center items-center">
+      <h1>Redirecting to Dashboard...</h1>
     </div>
   );
 }

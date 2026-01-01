@@ -8,20 +8,32 @@ import { Search, X } from "lucide-react";
 // components
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "./ui/input-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "../ui/input-group";
 
 // lib & hooks
 import { cn } from "@/lib/utils";
 import { OutputOption, SETTINGS, toSelectOptions } from "@/lib/types/settings";
-import { PropertySearchForm, propertySearchSchema } from "@/lib/validations/property-search";
+import {
+  PropertySearchForm,
+  propertySearchSchema,
+} from "@/lib/validations/property-search";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // context
 import { useTranslations } from "@/context/TranslationContext";
-import { redirect, useRouter } from "@/i18n/navigation";
-import { features } from "process";
-
+import { useRouter } from "@/i18n/navigation";
 
 // Props
 interface PropertySearchFilterProps {
@@ -35,7 +47,10 @@ interface SelectOptionElementProps {
 }
 
 // Select Option Element
-export const SelectOptionElement: React.FC<SelectOptionElementProps> = ({ options, field }) => {
+export const SelectOptionElement: React.FC<SelectOptionElementProps> = ({
+  options,
+  field,
+}) => {
   return (
     <Select value={field.value} onValueChange={field.onChange}>
       <SelectTrigger size="custom">
@@ -53,8 +68,10 @@ export const SelectOptionElement: React.FC<SelectOptionElementProps> = ({ option
 };
 
 // Property Search Filter Component
-export function PropertySearchFilter({ className, locale }: PropertySearchFilterProps) {
-
+export function PropertySearchFilter({
+  className,
+  locale,
+}: PropertySearchFilterProps) {
   // variables
   const translations = useTranslations();
   const [showAdvanced, setShowAdvanced] = React.useState<boolean>(false);
@@ -63,7 +80,19 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
   // Form setup
   const form = useForm<PropertySearchForm>({
     resolver: zodResolver(propertySearchSchema),
-    defaultValues: { type: "sale", region: "0", township: "0", propertyType: "0", hostelType: "0", hostelFormat: "0", minBed: "0", maxBed: "0", priceFrom: "0", priceTo: "0", q: "" },
+    defaultValues: {
+      type: "sale",
+      region: "0",
+      township: "0",
+      propertyType: "0",
+      hostelType: "0",
+      hostelFormat: "0",
+      minBed: "0",
+      maxBed: "0",
+      priceFrom: "0",
+      priceTo: "0",
+      q: "",
+    },
   });
 
   // Watch type to conditionally render fields
@@ -71,33 +100,71 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
   const isHostel = type === "hostels";
 
   // Select options
-  const propertyTypes = toSelectOptions(SETTINGS.PROPERTY_TYPES, locale ?? "en");
+  const propertyTypes = toSelectOptions(
+    SETTINGS.PROPERTY_TYPES,
+    locale ?? "en",
+  );
   const hostelTypes = toSelectOptions(SETTINGS.HOSTEL_TYPES, locale ?? "en");
-  const hostelFormats = toSelectOptions(SETTINGS.HOSTEL_FORMATS, locale ?? "en");
+  const hostelFormats = toSelectOptions(
+    SETTINGS.HOSTEL_FORMATS,
+    locale ?? "en",
+  );
   const priceOptions = toSelectOptions(SETTINGS.PRICE_OPTIONS, locale ?? "en");
-  const regionsOptions = toSelectOptions(SETTINGS.REGION_OPTIONS, locale ?? "en");
+  const regionsOptions = toSelectOptions(
+    SETTINGS.REGION_OPTIONS,
+    locale ?? "en",
+  );
   const bedOptions = toSelectOptions(SETTINGS.BED_OPTIONS, locale ?? "en");
   const kindOptions = toSelectOptions(SETTINGS.KIND_OPTIONS, locale ?? "en");
-  const townshipOptions = toSelectOptions(SETTINGS.TOWNSHIP_OPTIONS, locale ?? "en");
+  const townshipOptions = toSelectOptions(
+    SETTINGS.TOWNSHIP_OPTIONS,
+    locale ?? "en",
+  );
 
   // Helper function to filter options dynamically
-  const filterOptions = (options: OutputOption[], locale: "en" | "my", exclude: Record<string, string>) => {
+  const filterOptions = (
+    options: OutputOption[],
+    locale: "en" | "my",
+    exclude: Record<string, string>,
+  ) => {
     const labelToExclude = exclude[locale];
     return options.filter((option) => option.label !== labelToExclude);
   };
   // Generate filtered options
-  const generateFilteredOptions = (options: OutputOption[], locale: "en" | "my") => ({
-    exclude: (excludeLabels: Record<string, string>) => filterOptions(options, locale, excludeLabels),
+  const generateFilteredOptions = (
+    options: OutputOption[],
+    locale: "en" | "my",
+  ) => ({
+    exclude: (excludeLabels: Record<string, string>) =>
+      filterOptions(options, locale, excludeLabels),
   });
   // Filtered options
-  const bedOptionsFiltered = generateFilteredOptions(bedOptions, locale ?? "en");
-  const priceOptionsFiltered = generateFilteredOptions(priceOptions, locale ?? "en");
+  const bedOptionsFiltered = generateFilteredOptions(
+    bedOptions,
+    locale ?? "en",
+  );
+  const priceOptionsFiltered = generateFilteredOptions(
+    priceOptions,
+    locale ?? "en",
+  );
 
   // Final options excluding "Min" and "Max"
-  const minBedOptions = bedOptionsFiltered.exclude({ en: "Max Bed", my: "အိပ်ခန်း (အများဆုံး)" });
-  const maxBedOptions = bedOptionsFiltered.exclude({ en: "Min Bed", my: "အိပ်ခန်း (အနည်းဆုံး)" });
-  const minPriceOptions = priceOptionsFiltered.exclude({ en: "Price (To)", my: "ဈေးနှုန်း (အတွင်း)" });
-  const maxPriceOptions = priceOptionsFiltered.exclude({ en: "Price (From)", my: "ဈေးနှုန်း (မှ)" });
+  const minBedOptions = bedOptionsFiltered.exclude({
+    en: "Max Bed",
+    my: "အိပ်ခန်း (အများဆုံး)",
+  });
+  const maxBedOptions = bedOptionsFiltered.exclude({
+    en: "Min Bed",
+    my: "အိပ်ခန်း (အနည်းဆုံး)",
+  });
+  const minPriceOptions = priceOptionsFiltered.exclude({
+    en: "Price (To)",
+    my: "ဈေးနှုန်း (အတွင်း)",
+  });
+  const maxPriceOptions = priceOptionsFiltered.exclude({
+    en: "Price (From)",
+    my: "ဈေးနှုန်း (မှ)",
+  });
 
   // Form submit handler
   const onSubmit = (data: PropertySearchForm) => {
@@ -108,18 +175,13 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
       }
     });
     router.push({
-      pathname: '/search',
-      query: { features: 'true', ...Object.fromEntries(params) }
+      pathname: "/search",
+      query: { features: "true", ...Object.fromEntries(params) },
     });
   };
 
   return (
-    <div
-      className={cn(
-        "w-full max-w-7xl mx-auto",
-        className
-      )}
-    >
+    <div className={cn("w-full max-w-7xl mx-auto", className)}>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -132,16 +194,19 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
               control={form.control}
               name="q"
               render={({ field }) => (
-                <FormItem
-                  className="col-span-1 md:col-span-2">
+                <FormItem className="col-span-1 md:col-span-2">
                   <FormControl>
-                    <InputGroup
-                      className="w-full h-12 md:h-14">
+                    <InputGroup className="w-full h-12 md:h-14">
                       <InputGroupInput
                         {...field}
-                        placeholder={translations ? translations["keywordPlaceholder"] : "Enter keyword or ad number"}
-                        className="h-12 md:h-14 placeholder:text-foreground" />
-                      {field.value ?
+                        placeholder={
+                          translations
+                            ? translations["keywordPlaceholder"]
+                            : "Enter keyword or ad number"
+                        }
+                        className="h-12 md:h-14 placeholder:text-foreground"
+                      />
+                      {field.value ? (
                         <InputGroupAddon align="inline-end">
                           <InputGroupButton
                             aria-label="Close"
@@ -153,7 +218,8 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
                           >
                             <X />
                           </InputGroupButton>
-                        </InputGroupAddon> : null}
+                        </InputGroupAddon>
+                      ) : null}
                     </InputGroup>
                   </FormControl>
                 </FormItem>
@@ -188,7 +254,10 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
               name="township"
               render={({ field }) => (
                 <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                  <SelectOptionElement options={townshipOptions} field={field} />
+                  <SelectOptionElement
+                    options={townshipOptions}
+                    field={field}
+                  />
                 </FormItem>
               )}
             />
@@ -200,7 +269,7 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
               "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 p-4 md:p-6 transition-all duration-500 ease-in-out overflow-hidden",
               showAdvanced
                 ? "max-h-[2000px] opacity-100 animate-in slide-in-from-top-2 fade-in"
-                : "max-h-0 p-0 md:max-h-[2000px] md:opacity-100 md:animate-in md:slide-in-from-top-2 md:fade-in"
+                : "max-h-0 p-0 md:max-h-[2000px] md:opacity-100 md:animate-in md:slide-in-from-top-2 md:fade-in",
             )}
           >
             {/* Property / Hostel */}
@@ -211,7 +280,10 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
                   name="hostelType"
                   render={({ field }) => (
                     <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                      <SelectOptionElement options={hostelTypes} field={field} />
+                      <SelectOptionElement
+                        options={hostelTypes}
+                        field={field}
+                      />
                     </FormItem>
                   )}
                 />
@@ -221,7 +293,10 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
                   name="hostelFormat"
                   render={({ field }) => (
                     <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                      <SelectOptionElement options={hostelFormats} field={field} />
+                      <SelectOptionElement
+                        options={hostelFormats}
+                        field={field}
+                      />
                     </FormItem>
                   )}
                 />
@@ -232,7 +307,10 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
                 name="propertyType"
                 render={({ field }) => (
                   <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                    <SelectOptionElement options={propertyTypes} field={field} />
+                    <SelectOptionElement
+                      options={propertyTypes}
+                      field={field}
+                    />
                   </FormItem>
                 )}
               />
@@ -245,7 +323,10 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
                   name="minBed"
                   render={({ field }) => (
                     <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                      <SelectOptionElement options={minBedOptions} field={field} />
+                      <SelectOptionElement
+                        options={minBedOptions}
+                        field={field}
+                      />
                     </FormItem>
                   )}
                 />
@@ -255,7 +336,10 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
                   name="maxBed"
                   render={({ field }) => (
                     <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                      <SelectOptionElement options={maxBedOptions} field={field} />
+                      <SelectOptionElement
+                        options={maxBedOptions}
+                        field={field}
+                      />
                     </FormItem>
                   )}
                 />
@@ -267,7 +351,10 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
               name="priceFrom"
               render={({ field }) => (
                 <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                  <SelectOptionElement options={minPriceOptions} field={field} />
+                  <SelectOptionElement
+                    options={minPriceOptions}
+                    field={field}
+                  />
                 </FormItem>
               )}
             />
@@ -277,7 +364,10 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
               name="priceTo"
               render={({ field }) => (
                 <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                  <SelectOptionElement options={maxPriceOptions} field={field} />
+                  <SelectOptionElement
+                    options={maxPriceOptions}
+                    field={field}
+                  />
                 </FormItem>
               )}
             />
@@ -291,7 +381,13 @@ export function PropertySearchFilter({ className, locale }: PropertySearchFilter
               onClick={() => setShowAdvanced(!showAdvanced)}
               className="md:hidden w-full sm:w-auto order-2 sm:order-1"
             >
-              {showAdvanced ? translations ? translations["hideAdvancedFilters"] : "Hide Advanced Filters" : translations ? translations["showAdvancedFilters"] : "Show Advanced Filters"}
+              {showAdvanced
+                ? translations
+                  ? translations["hideAdvancedFilters"]
+                  : "Hide Advanced Filters"
+                : translations
+                  ? translations["showAdvancedFilters"]
+                  : "Show Advanced Filters"}
             </Button>
             <Button type="submit" className="w-full h-12 md:h-14">
               <Search className="mr-2 h-5 w-5" />

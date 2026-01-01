@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -17,47 +17,22 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
-import React from "react"
+} from "@/components/ui/sidebar";
 
-export function NavMain({
+export default function NavMain({
   items,
 }: {
   items: {
-    title: string
-    url: string
-    icon: LucideIcon
-    isActive?: boolean
+    title: string;
+    url: string;
+    icon: LucideIcon;
+    isActive?: boolean;
     items?: {
-      title: string
-      url: string
-    }[]
-  }[]
+      title: string;
+      url: string;
+    }[];
+  }[];
 }) {
-  const [activeUrl, setActiveUrl] = React.useState<string | null>(null);
-
-  // Retrieve active URL from localStorage on mount
-  React.useEffect(() => {
-    const savedActiveUrl = localStorage.getItem("activeNavUrl");
-    if (savedActiveUrl) {
-      setActiveUrl(savedActiveUrl);
-    }
-    // If no saved URL, set to first item's URL
-    else if (items.length > 0) {
-      setActiveUrl(items[0].url);
-    }
-    // add isActive to the corresponding item
-    items.forEach(item => {
-      item.isActive = item.url === activeUrl;
-    });
-  }, []);
-
-  // handle navigation item click
-  const handleNavClick = (url: string) => {
-    setActiveUrl(url);
-    localStorage.setItem("activeNavUrl", url);
-  };
-
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -99,5 +74,5 @@ export function NavMain({
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }
