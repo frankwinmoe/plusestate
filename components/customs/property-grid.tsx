@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useTranslations } from "@/context/TranslationContext";
 import { PropertyCard } from "./property-card";
 import type { ListingWithRelations } from "@/lib/types/database";
@@ -12,13 +11,22 @@ interface PropertyGridProps {
   loading?: boolean;
 }
 
-export function PropertyGrid({ listings, className, loading = false }: PropertyGridProps) {
+export function PropertyGrid({
+  listings,
+  className,
+  loading = false,
+}: PropertyGridProps) {
   // Translations
   const translations = useTranslations();
   // Loading state
   if (loading) {
     return (
-      <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6", className)}>
+      <div
+        className={cn(
+          "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6",
+          className,
+        )}
+      >
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
@@ -33,7 +41,9 @@ export function PropertyGrid({ listings, className, loading = false }: PropertyG
     return (
       <div className={cn("text-center py-12", className)}>
         <p className="text-muted-foreground text-lg">
-          {translations ? translations["noListingsFound"] : "No listings found."}
+          {translations
+            ? translations["noListingsFound"]
+            : "No listings found."}
         </p>
       </div>
     );
@@ -43,7 +53,7 @@ export function PropertyGrid({ listings, className, loading = false }: PropertyG
     <div
       className={cn(
         "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6",
-        className
+        className,
       )}
     >
       {listings.map((listing) => (
@@ -52,4 +62,3 @@ export function PropertyGrid({ listings, className, loading = false }: PropertyG
     </div>
   );
 }
-

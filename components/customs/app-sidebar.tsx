@@ -3,12 +3,18 @@
 import * as React from "react";
 import { LifeBuoy, List, LucideIcon, Send, SquareTerminal } from "lucide-react";
 
-import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
-import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
-
+import {
+  NavMain,
+  NavUser,
+  NavProjects,
+  NavSecondary,
+} from "@/components/nav-related";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+} from "@/components/ui/sidebar";
 
 interface SidebarData {
   user: {
@@ -45,7 +51,9 @@ export const SidebarBuilder: React.FC<SidebarBuilderProps> = ({ data }) => {
       <SidebarHeader>
         <div className="flex items-center gap-2 p-4">
           <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-            {React.createElement(data.navMain[0].icon, { className: "size-4" } as React.SVGProps<SVGSVGElement>)}
+            {React.createElement(data.navMain[0].icon, {
+              className: "size-4",
+            } as React.SVGProps<SVGSVGElement>)}
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-medium">PlusEstate</span>
@@ -54,9 +62,15 @@ export const SidebarBuilder: React.FC<SidebarBuilderProps> = ({ data }) => {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        {data.navMain && data.navMain.length > 0 && <NavMain items={data.navMain} />}
-        {data.projects && data.projects.length > 0 && <NavProjects projects={data.projects} />}
-        {data.navSecondary && data.navSecondary.length > 0 && <NavSecondary items={data.navSecondary} className="mt-auto" />}
+        {data.navMain && data.navMain.length > 0 && (
+          <NavMain items={data.navMain} />
+        )}
+        {data.projects && data.projects.length > 0 && (
+          <NavProjects projects={data.projects} />
+        )}
+        {data.navSecondary && data.navSecondary.length > 0 && (
+          <NavSecondary items={data.navSecondary} className="mt-auto" />
+        )}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
@@ -64,7 +78,6 @@ export const SidebarBuilder: React.FC<SidebarBuilderProps> = ({ data }) => {
     </Sidebar>
   );
 };
-
 
 const data = {
   user: {
@@ -77,9 +90,7 @@ const data = {
       title: "Dashboard",
       url: "/protected",
       icon: SquareTerminal,
-      items: [
-        { title: "Metrics", url: "/protected/metrics" },
-      ],
+      items: [{ title: "Metrics", url: "/protected/metrics" }],
     },
     {
       title: "Listings",
