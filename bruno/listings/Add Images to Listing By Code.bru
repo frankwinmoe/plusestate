@@ -4,12 +4,51 @@ meta {
   seq: 5
 }
 
-get {
-  url: {{relativeUrl
-  body: none
+post {
+  url: {{relativeUrl}}/SOK-003/images
+  body: json
   auth: inherit
+}
+
+body:json {
+  [
+    {
+      "image_url": "https://plus-estate.s3.us-east-2.amazonaws.com/SOK-003/SOK-003-Image-00001.jpg"
+    },
+    {
+      "image_url": "https://plus-estate.s3.us-east-2.amazonaws.com/SOK-003/SOK-003-Image-00002.jpg"
+    },
+    {
+      "image_url": "https://plus-estate.s3.us-east-2.amazonaws.com/SOK-003/SOK-003-Image-00003.jpg"
+    },
+    {
+      "image_url": "https://plus-estate.s3.us-east-2.amazonaws.com/SOK-003/SOK-003-Image-00004.jpg"
+    },
+    {
+      "image_url": "https://plus-estate.s3.us-east-2.amazonaws.com/SOK-003/SOK-003-Image-00005.jpg"
+    },
+    {
+      "image_url": "https://plus-estate.s3.us-east-2.amazonaws.com/SOK-003/SOK-003-Image-00006.jpg"
+    },
+    {
+      "image_url": "https://plus-estate.s3.us-east-2.amazonaws.com/SOK-003/SOK-003-Image-00007.jpg"
+    },
+    {
+      "image_url": "https://plus-estate.s3.us-east-2.amazonaws.com/SOK-003/SOK-003-Image-00008.jpg"
+    },
+    {
+      "image_url": "https://plus-estate.s3.us-east-2.amazonaws.com/SOK-003/SOK-003-Image-00009.jpg"
+    },
+    {
+      "image_url": "https://plus-estate.s3.us-east-2.amazonaws.com/SOK-003/SOK-003-Image-00010.jpg"
+    },
+    {
+      "image_url": "https://plus-estate.s3.us-east-2.amazonaws.com/SOK-003/SOK-003-Image-00011.jpg"
+    }
+  ]
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
