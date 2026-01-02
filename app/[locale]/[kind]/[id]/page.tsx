@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CopyButton } from "@/components/copy-button";
-import { getListingById, incrementListingViews } from "@/lib/db/listings";
+import { getListingById } from "@/lib/db/listings";
 import { formatDistanceToNow } from "date-fns";
 import { getLocale, getMessages } from "next-intl/server";
 import {
@@ -24,6 +24,7 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item";
+import { incrementListingViewsV2 } from "@/lib/actions/increment-listing-view";
 
 interface PropertyDetailsPageProps {
   params: Promise<{
@@ -37,6 +38,9 @@ export default async function PropertyDetailsPage({
 }: PropertyDetailsPageProps) {
   // Extract kind and id from params
   const { kind, id } = await params;
+
+  // Increment view count (fire and forget)
+  await incrementListingViewsV2(id);
 
   // set translation
   const locale = await getLocale();
@@ -53,8 +57,6 @@ export default async function PropertyDetailsPage({
     notFound();
   }
 
-  // Increment view count (fire and forget)
-  incrementListingViews(listing.id).catch(console.error);
   // set main image
   const mainImage =
     listing.images && listing.images.length > 0
@@ -360,14 +362,14 @@ export default async function PropertyDetailsPage({
                         className="rounded border border-border"
                       />
                     )}
-                    <p className="font-semibold flex flex-col gap-1">
+                    <span className="font-semibold flex flex-col gap-1">
                       {listing.agency.display_name}
                       {listing.agency.phone && (
-                        <p className="text-sm text-muted-foreground">
+                        <span className="text-sm text-muted-foreground">
                           {listing.agency.phone}
-                        </p>
+                        </span>
                       )}
-                    </p>
+                    </span>
                   </ItemDescription>
                 </ItemContent>
               </Item>

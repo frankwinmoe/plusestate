@@ -3,47 +3,66 @@ import type {
   ListingWithRelations,
   SearchListingsParams,
   SearchListingResult,
+  Listing,
 } from "@/lib/types/database";
 
 /**
  * Search listings using the database function
  */
-export async function searchListings(params: SearchListingsParams = {}): Promise<SearchListingResult[]> {
-
+export async function searchListings(
+  params: SearchListingsParams = {},
+): Promise<SearchListingResult[]> {
   const supabase = await createClient();
-  const { q, kind, region_id, township_id, property_type_id, min_bed, max_bed, price_from, price_to,
-    limit = 20, offset = 0 } = params;
+  const {
+    q,
+    kind,
+    region_id,
+    township_id,
+    property_type_id,
+    min_bed,
+    max_bed,
+    price_from,
+    price_to,
+    limit = 20,
+    offset = 0,
+  } = params;
 
   try {
-    const { data: searchResults, error: searchError } = await supabase.rpc("search_listings", {
-      p_q: q || null,
-      p_kind: kind || null,
-      p_region_id: region_id || null,
-      p_township_id: township_id || null,
-      p_property_type_id: property_type_id || null,
-      p_min_bed: min_bed || null,
-      p_max_bed: max_bed || null,
-      p_price_from: price_from || null,
-      p_price_to: price_to || null,
-    })
+    const { data: searchResults, error: searchError } = await supabase.rpc(
+      "search_listings",
+      {
+        p_q: q || null,
+        p_kind: kind || null,
+        p_region_id: region_id || null,
+        p_township_id: township_id || null,
+        p_property_type_id: property_type_id || null,
+        p_min_bed: min_bed || null,
+        p_max_bed: max_bed || null,
+        p_price_from: price_from || null,
+        p_price_to: price_to || null,
+      },
+    );
     if (searchError) {
       console.error("Search listings RPC error:", searchError);
       return [];
     }
 
     // Extract listing IDs from the search results
-    const listingIds = searchResults?.map((item: { id: number }) => item.id) || [];
+    const listingIds =
+      searchResults?.map((item: { id: number }) => item.id) || [];
 
     // Fetch full listing details for the matching IDs
     const { data: listingsData, error: listingsError } = await supabase
       .from("listings")
-      .select(`
+      .select(
+        `
                 *,
                 region:region_id(*),
                 township:township_id(*),
                 property_type:property_type_id(*),
                 images:listing_images(*)
-            `)
+            `,
+      )
       .in("id", listingIds);
 
     if (listingsError) {
@@ -52,12 +71,14 @@ export async function searchListings(params: SearchListingsParams = {}): Promise
     }
 
     // Map listings by ID for efficient lookup
-    const listingsMap = new Map<number, any>(
-      listingsData?.map((listing) => [listing.id, listing]) || []
+    const listingsMap = new Map<number, Listing>(
+      listingsData?.map((listing) => [listing.id, listing]) || [],
     );
 
     // Enrich the search results with full listing details
-    const enrichedData = searchResults?.map((item: { id: number }) => listingsMap.get(item.id)) || [];
+    const enrichedData =
+      searchResults?.map((item: { id: number }) => listingsMap.get(item.id)) ||
+      [];
 
     // Apply limit and offset manually if RPC doesn't support it
     const results = enrichedData || [];
@@ -72,7 +93,7 @@ export async function searchListings(params: SearchListingsParams = {}): Promise
  * Get a single listing by ID or listing_code with all relations
  */
 export async function getListingById(
-  idOrCode: string
+  idOrCode: string,
 ): Promise<ListingWithRelations | null> {
   const supabase = await createClient();
 
@@ -88,7 +109,7 @@ export async function getListingById(
       property_type:property_types(*),
       agency:agencies(*),
       images:listing_images(*)
-    `
+    `,
     )
     .eq("status", "published");
 
@@ -99,15 +120,17 @@ export async function getListingById(
   } else {
     // Try as UUID first, then as listing code without prefix
     // If it's numeric, try to match listing_code suffix
-    if (idOrCode.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+    if (
+      idOrCode.match(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      )
+    ) {
       query = query.eq("id", idOrCode);
     } else {
       // Try matching listing_code suffix (e.g., "15385164" matches "S-15385164")
       query = query.ilike("listing_code", `%-${idOrCode}`);
     }
   }
-
-  console.log("Query parameters:", idOrCode);
 
   const { data, error } = await query.maybeSingle();
 
@@ -128,7 +151,7 @@ export async function getListingById(
  * Get featured listings for homepage
  */
 export async function getFeaturedListings(
-  limit: number = 6
+  limit: number = 6,
 ): Promise<ListingWithRelations[]> {
   const supabase = await createClient();
 
@@ -142,7 +165,7 @@ export async function getFeaturedListings(
       property_type:property_types(*),
       agency:agencies(*),
       images:listing_images(*)
-    `
+    `,
     )
     .eq("status", "published")
     .eq("is_featured", true)
@@ -161,7 +184,7 @@ export async function getFeaturedListings(
  * Get recent listings for homepage
  */
 export async function getRecentListings(
-  limit: number = 12
+  limit: number = 12,
 ): Promise<ListingWithRelations[]> {
   const supabase = await createClient();
 
@@ -175,7 +198,7 @@ export async function getRecentListings(
       property_type:property_types(*),
       agency:agencies(*),
       images:listing_images(*)
-    `
+    `,
     )
     .eq("status", "published")
     .order("published_at", { ascending: false })
@@ -193,10 +216,12 @@ export async function getRecentListings(
  * Increment view count for a listing
  */
 export async function incrementListingViews(listingId: string): Promise<void> {
+  // get user id from session or context if needed
+
+  // and only if user does not have viewed it recently (to prevent spam) increment views
   const supabase = await createClient();
 
   await supabase.rpc("increment_listing_views", {
     p_listing_id: listingId,
   });
 }
-

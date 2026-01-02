@@ -90,7 +90,7 @@ const data = {
       title: "Dashboard",
       url: "/protected",
       icon: SquareTerminal,
-      items: [{ title: "Metrics", url: "/protected/metrics" }],
+      // items: [{ title: "Metrics", url: "/protected/metrics" }],
     },
     {
       title: "Listings",
