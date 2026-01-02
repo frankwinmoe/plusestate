@@ -2,21 +2,43 @@
 import { useLocale } from "next-intl";
 
 export const usePriceFormatter = () => {
-    const locale = useLocale();
-    // Function to convert digits to Myanmar numerals
-    const convertToMyanmarNumerals = (numberString: string) => {
-        const myanmarDigits = ["၀", "၁", "၂", "၃", "၄", "၅", "၆", "၇", "၈", "၉"];
-        return numberString.replace(/\d/g, (digit) => myanmarDigits[parseInt(digit, 10)]);
-    };
-    // Function to format price
-    const formatPrice = (amount: number, unitLabel?: string) => {
-        if (!amount) return "Price Inquiry";
-        let formatUnit = "en-US";
-        if (locale === "my") formatUnit = "my-MM";
-        const formatted = amount.toLocaleString(formatUnit);
-        const converted = locale === "my" ? convertToMyanmarNumerals(formatted) : formatted;
-        return locale === "my" ? `${converted} ${unitLabel || "ကျပ်"}` : `${converted} ${unitLabel || "MMK"}`;
-    };
-    // Return the formatPrice function
-    return { formatPrice };
+  const locale = useLocale();
+
+  const toMyanmarDigits = (value: string) => {
+    const map = ["၀", "၁", "၂", "၃", "၄", "၅", "၆", "၇", "၈", "၉"];
+    return value.replace(/\d/g, (d) => map[Number(d)]);
+  };
+
+  const formatPrice = (amount: number, unitLabel?: string) => {
+    if (!amount) {
+      return locale === "my" ? "စျေးနှုန်းမေးမြန်းရန်" : "Price Inquiry";
+    }
+
+    const isMyanmar = locale === "my";
+    const isLakhs = amount >= 100000;
+
+    const formatted = amount.toLocaleString("en-US");
+    const converted = isMyanmar ? toMyanmarDigits(formatted) : formatted;
+    if (isLakhs) {
+      const lakhsAmount = amount / 100000;
+      const lakhsFormatted = lakhsAmount.toLocaleString("en-US", {
+        maximumFractionDigits: 2,
+      });
+      const lakhsConverted = isMyanmar
+        ? toMyanmarDigits(lakhsFormatted)
+        : lakhsFormatted;
+      return isMyanmar
+        ? `${lakhsConverted} သိန်း`
+        : `${lakhsConverted} Lakhs ${unitLabel || "MMK"}`;
+    }
+    
+    // Fallbacks
+    if (isMyanmar) {
+      return `${converted} သိန်း`;
+    }
+
+    return `${converted} ${unitLabel || "MMK"}`;
+  };
+
+  return { formatPrice };
 };

@@ -70,7 +70,7 @@
     "share": "မျှဝေရန်",
     "report": "အစီရင်ခံပါ",
     "pricePerSquareFoot": "တစ်စတုရန်းပေ ဈေးနှုန်း",
-    "pricePerSquareFootValue": "{value} ကျပ်သိန်း",
+    "pricePerSquareFootValue": "{value}",
     "agency": "အေဂျင်စီ"
   },
   "notfound": {

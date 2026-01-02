@@ -18,11 +18,7 @@ import type { ListingWithRelations } from "@/lib/types/database";
 import { useTranslations } from "@/context/TranslationContext";
 import { useLocale } from "next-intl";
 import { usePriceFormatter } from "@/hooks/usePriceFormatter";
-import {
-  ButtonGroup,
-  ButtonGroupSeparator,
-  ButtonGroupText,
-} from "@/components/ui/button-group";
+import { ButtonGroup } from "@/components/ui/button-group";
 
 interface PropertyCardProps {
   listing: ListingWithRelations;
@@ -155,7 +151,11 @@ export function PropertyCard({ listing, className }: PropertyCardProps) {
           </p>
           {listing.price_per_sqft && listing.area_sqft ? (
             <p className="text-sm text-muted-foreground mt-4">
-              တစ်စတုရန်းပေ {listing.price_per_sqft.toFixed(1)} သိန်း (ကျပ်)
+              {translations["pricePerSquareFoot"]}{" "}
+              {translations["pricePerSquareFootValue"].replace(
+                "{value}",
+                formatPrice(listing.price_per_sqft / listing.area_sqft),
+              )}
             </p>
           ) : null}
         </div>
