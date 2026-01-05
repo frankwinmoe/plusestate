@@ -1,20 +1,28 @@
 // app/[locale]/api/townships/route.ts
 import { createClient } from "@/lib/supabase/server";
 import TownshipsService from "@/lib/services/township";
+import { NextResponse } from "next/server";
 
-export async function GET() {
-    const supabase = await createClient();
-    const service = new TownshipsService(supabase);
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const regionId = searchParams.get("regionId");
 
-    return Response.json(await service.list());
+  if (!regionId) {
+    return NextResponse.json([]);
+  }
+  const supabase = await createClient();
+  const service = new TownshipsService(supabase);
+
+  const townships = await service.listByRegion(Number(regionId));
+  return NextResponse.json(townships);
 }
 
 export async function POST(req: Request) {
-    const supabase = await createClient();
-    const service = new TownshipsService(supabase);
+  const supabase = await createClient();
+  const service = new TownshipsService(supabase);
 
-    const body = await req.json();
-    const township = await service.create(body);
+  const body = await req.json();
+  const township = await service.create(body);
 
-    return Response.json(township, { status: 201 });
+  return Response.json(township, { status: 201 });
 }

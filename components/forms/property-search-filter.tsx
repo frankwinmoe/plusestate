@@ -34,6 +34,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 // context
 import { useTranslations } from "@/context/TranslationContext";
 import { useRouter } from "@/i18n/navigation";
+import { Township } from "@/lib/services/township";
 
 // Props
 interface PropertySearchFilterProps {
@@ -75,6 +76,12 @@ export function PropertySearchFilter({
   // variables
   const translations = useTranslations();
   const [showAdvanced, setShowAdvanced] = React.useState<boolean>(false);
+
+  const [townshipOptions, setTownshipOptions] = React.useState<OutputOption[]>(
+    [],
+  );
+  const [loadingTownships, setLoadingTownships] = React.useState(false);
+
   const router = useRouter();
 
   // Form setup
@@ -94,6 +101,8 @@ export function PropertySearchFilter({
       q: "",
     },
   });
+
+  const selectedRegion = form.watch("region");
 
   // Watch type to conditionally render fields
   const type = form.watch("type");
@@ -116,10 +125,36 @@ export function PropertySearchFilter({
   );
   const bedOptions = toSelectOptions(SETTINGS.BED_OPTIONS, locale ?? "en");
   const kindOptions = toSelectOptions(SETTINGS.KIND_OPTIONS, locale ?? "en");
-  const townshipOptions = toSelectOptions(
-    SETTINGS.TOWNSHIP_OPTIONS,
-    locale ?? "en",
-  );
+
+  React.useEffect(() => {
+    if (!selectedRegion || selectedRegion === "0") {
+      setTownshipOptions([]);
+      form.setValue("township", "0");
+      return;
+    }
+
+    const fetchTownships = async () => {
+      setLoadingTownships(true);
+      try {
+        const res = await fetch(`/api/townships?regionId=${selectedRegion}`);
+        const data: Township[] = await res.json();
+
+        const options = data.map((t) => ({
+          value: t.id.toString(),
+          label: locale === "my" ? t.name_mm : t.name_en || t.name_mm,
+        }));
+
+        setTownshipOptions(options);
+        form.setValue("township", "0"); // reset when region changes
+      } catch (err) {
+        console.error("Failed to fetch townships", err);
+      } finally {
+        setLoadingTownships(false);
+      }
+    };
+
+    fetchTownships();
+  }, [selectedRegion, locale, form]);
 
   // Helper function to filter options dynamically
   const filterOptions = (
@@ -254,10 +289,31 @@ export function PropertySearchFilter({
               name="township"
               render={({ field }) => (
                 <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                  <SelectOptionElement
-                    options={townshipOptions}
-                    field={field}
-                  />
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    disabled={
+                      !selectedRegion ||
+                      selectedRegion === "0" ||
+                      loadingTownships
+                    }
+                  >
+                    <SelectTrigger size="custom">
+                      <SelectValue
+                        placeholder={
+                          loadingTownships ? "Loading..." : "Select township"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">Select township</SelectItem>
+                      {townshipOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
