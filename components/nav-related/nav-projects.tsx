@@ -1,29 +1,9 @@
 "use client";
 
-import {
-  Folder,
-  MoreHorizontal,
-  Share,
-  Trash2,
-  type LucideIcon,
-} from "lucide-react";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
+import * as lucideReact from "lucide-react";
+import * as dropdownMenu from "@/components/ui/dropdown-menu";
+import * as sidebar from "@/components/ui/sidebar";
+import { Link } from "@/i18n/navigation";
 
 export default function NavProjects({
   projects,
@@ -31,59 +11,59 @@ export default function NavProjects({
   projects: {
     name: string;
     url: string;
-    icon: LucideIcon;
+    icon: lucideReact.LucideIcon;
   }[];
 }) {
-  const { isMobile } = useSidebar();
+  const { isMobile } = sidebar.useSidebar();
 
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Projects</SidebarGroupLabel>
-      <SidebarMenu>
+    <sidebar.SidebarGroup className="group-data-[collapsible=icon]:hidden">
+      <sidebar.SidebarGroupLabel>Projects</sidebar.SidebarGroupLabel>
+      <sidebar.SidebarMenu>
         {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <a href={item.url}>
+          <sidebar.SidebarMenuItem key={item.name}>
+            <sidebar.SidebarMenuButton asChild>
+              <Link href={item.url}>
                 <item.icon />
                 <span>{item.name}</span>
-              </a>
-            </SidebarMenuButton>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction showOnHover>
-                  <MoreHorizontal />
+              </Link>
+            </sidebar.SidebarMenuButton>
+            <dropdownMenu.DropdownMenu>
+              <dropdownMenu.DropdownMenuTrigger asChild>
+                <sidebar.SidebarMenuAction showOnHover>
+                  <lucideReact.MoreHorizontal />
                   <span className="sr-only">More</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
+                </sidebar.SidebarMenuAction>
+              </dropdownMenu.DropdownMenuTrigger>
+              <dropdownMenu.DropdownMenuContent
                 className="w-48"
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
               >
-                <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
+                <dropdownMenu.DropdownMenuItem>
+                  <lucideReact.Folder className="text-muted-foreground" />
                   <span>View Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Share className="text-muted-foreground" />
+                </dropdownMenu.DropdownMenuItem>
+                <dropdownMenu.DropdownMenuItem>
+                  <lucideReact.Share className="text-muted-foreground" />
                   <span>Share Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
+                </dropdownMenu.DropdownMenuItem>
+                <dropdownMenu.DropdownMenuSeparator />
+                <dropdownMenu.DropdownMenuItem>
+                  <lucideReact.Trash2 className="text-muted-foreground" />
                   <span>Delete Project</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
+                </dropdownMenu.DropdownMenuItem>
+              </dropdownMenu.DropdownMenuContent>
+            </dropdownMenu.DropdownMenu>
+          </sidebar.SidebarMenuItem>
         ))}
-        <SidebarMenuItem>
-          <SidebarMenuButton>
-            <MoreHorizontal />
+        <sidebar.SidebarMenuItem>
+          <sidebar.SidebarMenuButton>
+            <lucideReact.MoreHorizontal />
             <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarGroup>
+          </sidebar.SidebarMenuButton>
+        </sidebar.SidebarMenuItem>
+      </sidebar.SidebarMenu>
+    </sidebar.SidebarGroup>
   );
 }

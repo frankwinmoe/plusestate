@@ -1,25 +1,11 @@
 "use client";
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
+import * as collapsible from "@/components/ui/collapsible";
+import * as sidebar from "@/components/ui/sidebar";
+import { Link } from "@/i18n/navigation";
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
-
-export default function NavMain({
+export function NavMain({
   items,
 }: {
   items: {
@@ -34,45 +20,49 @@ export default function NavMain({
   }[];
 }) {
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
-      <SidebarMenu>
+    <sidebar.SidebarGroup>
+      <sidebar.SidebarGroupLabel>Platform</sidebar.SidebarGroupLabel>
+      <sidebar.SidebarMenu>
         {items.map((item) => (
-          <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip={item.title}>
-                <a href={item.url}>
+          <collapsible.Collapsible
+            key={item.title}
+            asChild
+            defaultOpen={item.isActive}
+          >
+            <sidebar.SidebarMenuItem>
+              <sidebar.SidebarMenuButton asChild tooltip={item.title}>
+                <Link href={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
-                </a>
-              </SidebarMenuButton>
+                </Link>
+              </sidebar.SidebarMenuButton>
               {item.items?.length ? (
                 <>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuAction className="data-[state=open]:rotate-90">
+                  <collapsible.CollapsibleTrigger asChild>
+                    <sidebar.SidebarMenuAction className="data-[state=open]:rotate-90">
                       <ChevronRight />
                       <span className="sr-only">Toggle</span>
-                    </SidebarMenuAction>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
+                    </sidebar.SidebarMenuAction>
+                  </collapsible.CollapsibleTrigger>
+                  <collapsible.CollapsibleContent>
+                    <sidebar.SidebarMenuSub>
                       {item.items?.map((subItem) => (
-                        <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton asChild>
-                            <a href={subItem.url}>
+                        <sidebar.SidebarMenuSubItem key={subItem.title}>
+                          <sidebar.SidebarMenuSubButton asChild>
+                            <Link href={subItem.url}>
                               <span>{subItem.title}</span>
-                            </a>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+                            </Link>
+                          </sidebar.SidebarMenuSubButton>
+                        </sidebar.SidebarMenuSubItem>
                       ))}
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
+                    </sidebar.SidebarMenuSub>
+                  </collapsible.CollapsibleContent>
                 </>
               ) : null}
-            </SidebarMenuItem>
-          </Collapsible>
+            </sidebar.SidebarMenuItem>
+          </collapsible.Collapsible>
         ))}
-      </SidebarMenu>
-    </SidebarGroup>
+      </sidebar.SidebarMenu>
+    </sidebar.SidebarGroup>
   );
 }

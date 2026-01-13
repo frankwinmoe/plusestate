@@ -1,12 +1,14 @@
 "use client";
 
 import React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+
 import Loader from "@/components/customs/loader";
 import SidebarHeader from "@/components/customs/sidebar-header";
 import { getAllListing } from "@/lib/helpers";
 import { Listing, ListingStatus } from "@/lib/types/database";
-import { DataTable } from "./data-table";
 import { columns } from "./columns";
+import { DataTable } from "./data-table";
 import { TableToolbar } from "./table-toolbar";
 
 const breadcrumb = [
@@ -14,27 +16,37 @@ const breadcrumb = [
   { title: "Listings", href: "/protected/listings" },
 ];
 
-export default function Listings() {
+const PAGE_SIZE = 10;
+
+export default function ListingsPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // -----------------------------
+  // Read from URL
+  // -----------------------------
+  const page = Number(searchParams.get("page") ?? 1);
+  const search = searchParams.get("search") ?? "";
+  const status = (searchParams.get("status") as ListingStatus | "all") ?? "all";
+  const featured =
+    (searchParams.get("featured") as "all" | "true" | "false") ?? "all";
+
+  // -----------------------------
+  // Data state
+  // -----------------------------
   const [loading, setLoading] = React.useState(true);
   const [listings, setListings] = React.useState<Listing[]>([]);
   const [total, setTotal] = React.useState(0);
-  const [page, setPage] = React.useState(1);
-  const [search, setSearch] = React.useState("");
-  const [status, setStatus] = React.useState<ListingStatus | "all">(
-    "published",
-  );
-  const [featured, setFeatured] = React.useState<"all" | "true" | "false">(
-    "all",
-  );
 
-  const pageSize = 10;
-
+  // -----------------------------
+  // Fetch whenever params change
+  // -----------------------------
   React.useEffect(() => {
     setLoading(true);
 
     getAllListing({
       page,
-      pageSize,
+      pageSize: PAGE_SIZE,
       status: status === "all" ? undefined : status,
       search,
       featured,
@@ -43,9 +55,25 @@ export default function Listings() {
         setListings(res.data);
         setTotal(res.total);
       })
-      .catch(console.error)
       .finally(() => setLoading(false));
-  }, [page, status, search, featured]);
+  }, [page, search, status, featured]);
+
+  // -----------------------------
+  // URL helper
+  // -----------------------------
+  function updateParams(next: Record<string, string | number | undefined>) {
+    const params = new URLSearchParams(searchParams.toString());
+
+    Object.entries(next).forEach(([key, value]) => {
+      if (!value || value === "all" || value === 1) {
+        params.delete(key);
+      } else {
+        params.set(key, String(value));
+      }
+    });
+
+    router.push(`?${params.toString()}`);
+  }
 
   return (
     <div>
@@ -57,15 +85,10 @@ export default function Listings() {
           search={search}
           status={status}
           featured={featured}
-          onSearchChange={setSearch}
-          onStatusChange={setStatus}
-          onFeaturedChange={setFeatured}
-          onReset={() => {
-            setSearch("");
-            setStatus("all");
-            setFeatured("all");
-            setPage(1);
-          }}
+          onSearchChange={(v) => updateParams({ search: v, page: 1 })}
+          onStatusChange={(v) => updateParams({ status: v, page: 1 })}
+          onFeaturedChange={(v) => updateParams({ featured: v, page: 1 })}
+          onReset={() => router.push("/protected/listings")}
         />
 
         {loading ? (
@@ -77,9 +100,9 @@ export default function Listings() {
             columns={columns}
             data={listings}
             page={page}
-            pageSize={pageSize}
+            pageSize={PAGE_SIZE}
             total={total}
-            onPageChange={setPage}
+            onPageChange={(p) => updateParams({ page: p })}
           />
         )}
       </div>
