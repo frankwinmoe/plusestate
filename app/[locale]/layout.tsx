@@ -10,6 +10,7 @@ import { getMessages } from "next-intl/server";
 
 // Context
 import { AppContextProvider } from "@/context/AppContext";
+import { Toaster } from "@/components/ui/sonner";
 
 // Generate static params for locales
 export function generateStaticParams() {
@@ -57,6 +58,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <Toaster position="top-right" />
             <AppContextProvider>{children}</AppContextProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

@@ -16,10 +16,17 @@ export async function GET() {
     previousMonthEnd.setSeconds(-1);
 
     // Fetch total listings for current and previous month
-    const { count: currentListings } = await supabase
-      .from("listings")
-      .select("id", { count: "exact" })
-      .gte("created_at", currentMonthStart.toISOString());
+    const { count: currentListings, error: currentListingsError } =
+      await supabase
+        .from("listings")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", currentMonthStart.toISOString());
+
+    if (currentListingsError) {
+      console.error(currentListingsError);
+    }
+
+    console.log(currentListings);
 
     const { count: previousListings } = await supabase
       .from("listings")

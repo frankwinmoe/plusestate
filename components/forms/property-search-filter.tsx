@@ -1,34 +1,20 @@
 "use client";
 
-import * as React from "react";
-import { useForm } from "react-hook-form";
-import type { ControllerRenderProps } from "react-hook-form";
 import { Search, X } from "lucide-react";
+import * as React from "react";
+import type { ControllerRenderProps } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 // components
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "../ui/input-group";
+import * as form_1 from "@/components/ui/form";
+import * as select from "@/components/ui/select";
+import * as inputGroup from "../ui/input-group";
 
 // lib & hooks
+import * as settings from "@/lib/types/settings";
 import { cn } from "@/lib/utils";
-import { OutputOption, SETTINGS, toSelectOptions } from "@/lib/types/settings";
-import {
-  PropertySearchForm,
-  propertySearchSchema,
-} from "@/lib/validations/property-search";
+import * as propertySearch from "@/lib/validations/property-search";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // context
@@ -43,8 +29,11 @@ interface PropertySearchFilterProps {
 }
 
 interface SelectOptionElementProps {
-  options: OutputOption[];
-  field: ControllerRenderProps<PropertySearchForm, keyof PropertySearchForm>;
+  options: settings.OutputOption[];
+  field: ControllerRenderProps<
+    propertySearch.PropertySearchForm,
+    keyof propertySearch.PropertySearchForm
+  >;
 }
 
 // Select Option Element
@@ -53,18 +42,18 @@ export const SelectOptionElement: React.FC<SelectOptionElementProps> = ({
   field,
 }) => {
   return (
-    <Select value={field.value} onValueChange={field.onChange}>
-      <SelectTrigger size="custom">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
+    <select.Select value={field.value} onValueChange={field.onChange}>
+      <select.SelectTrigger size="custom">
+        <select.SelectValue />
+      </select.SelectTrigger>
+      <select.SelectContent>
         {options.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
+          <select.SelectItem key={option.value} value={option.value}>
             {option.label}
-          </SelectItem>
+          </select.SelectItem>
         ))}
-      </SelectContent>
-    </Select>
+      </select.SelectContent>
+    </select.Select>
   );
 };
 
@@ -77,16 +66,16 @@ export function PropertySearchFilter({
   const translations = useTranslations();
   const [showAdvanced, setShowAdvanced] = React.useState<boolean>(false);
 
-  const [townshipOptions, setTownshipOptions] = React.useState<OutputOption[]>(
-    [],
-  );
+  const [townshipOptions, setTownshipOptions] = React.useState<
+    settings.OutputOption[]
+  >([]);
   const [loadingTownships, setLoadingTownships] = React.useState(false);
 
   const router = useRouter();
 
   // Form setup
-  const form = useForm<PropertySearchForm>({
-    resolver: zodResolver(propertySearchSchema),
+  const form = useForm<propertySearch.PropertySearchForm>({
+    resolver: zodResolver(propertySearch.propertySearchSchema),
     defaultValues: {
       type: "sale",
       region: "0",
@@ -109,22 +98,34 @@ export function PropertySearchFilter({
   const isHostel = type === "hostels";
 
   // Select options
-  const propertyTypes = toSelectOptions(
-    SETTINGS.PROPERTY_TYPES,
+  const propertyTypes = settings.toSelectOptions(
+    settings.SETTINGS.PROPERTY_TYPES,
     locale ?? "en",
   );
-  const hostelTypes = toSelectOptions(SETTINGS.HOSTEL_TYPES, locale ?? "en");
-  const hostelFormats = toSelectOptions(
-    SETTINGS.HOSTEL_FORMATS,
+  const hostelTypes = settings.toSelectOptions(
+    settings.SETTINGS.HOSTEL_TYPES,
     locale ?? "en",
   );
-  const priceOptions = toSelectOptions(SETTINGS.PRICE_OPTIONS, locale ?? "en");
-  const regionsOptions = toSelectOptions(
-    SETTINGS.REGION_OPTIONS,
+  const hostelFormats = settings.toSelectOptions(
+    settings.SETTINGS.HOSTEL_FORMATS,
     locale ?? "en",
   );
-  const bedOptions = toSelectOptions(SETTINGS.BED_OPTIONS, locale ?? "en");
-  const kindOptions = toSelectOptions(SETTINGS.KIND_OPTIONS, locale ?? "en");
+  const priceOptions = settings.toSelectOptions(
+    settings.SETTINGS.PRICE_OPTIONS,
+    locale ?? "en",
+  );
+  const regionsOptions = settings.toSelectOptions(
+    settings.SETTINGS.REGION_OPTIONS,
+    locale ?? "en",
+  );
+  const bedOptions = settings.toSelectOptions(
+    settings.SETTINGS.BED_OPTIONS,
+    locale ?? "en",
+  );
+  const kindOptions = settings.toSelectOptions(
+    settings.SETTINGS.KIND_OPTIONS,
+    locale ?? "en",
+  );
 
   React.useEffect(() => {
     if (!selectedRegion || selectedRegion === "0") {
@@ -158,7 +159,7 @@ export function PropertySearchFilter({
 
   // Helper function to filter options dynamically
   const filterOptions = (
-    options: OutputOption[],
+    options: settings.OutputOption[],
     locale: "en" | "my",
     exclude: Record<string, string>,
   ) => {
@@ -167,7 +168,7 @@ export function PropertySearchFilter({
   };
   // Generate filtered options
   const generateFilteredOptions = (
-    options: OutputOption[],
+    options: settings.OutputOption[],
     locale: "en" | "my",
   ) => ({
     exclude: (excludeLabels: Record<string, string>) =>
@@ -202,7 +203,7 @@ export function PropertySearchFilter({
   });
 
   // Form submit handler
-  const onSubmit = (data: PropertySearchForm) => {
+  const onSubmit = (data: propertySearch.PropertySearchForm) => {
     const params = new URLSearchParams();
     Object.entries(data).forEach(([key, value]) => {
       if (value && value !== "0") {
@@ -217,7 +218,7 @@ export function PropertySearchFilter({
 
   return (
     <div className={cn("w-full max-w-7xl mx-auto", className)}>
-      <Form {...form}>
+      <form_1.Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="bg-card border rounded-2xl shadow-lg"
@@ -225,14 +226,14 @@ export function PropertySearchFilter({
           {/* ROW 1 */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-3 md:gap-4 p-4 md:p-6 border-b border-border/50 animate-in fade-in slide-in-from-top-2 duration-300">
             {/* Search */}
-            <FormField
+            <form_1.FormField
               control={form.control}
               name="q"
               render={({ field }) => (
-                <FormItem className="col-span-1 md:col-span-2">
-                  <FormControl>
-                    <InputGroup className="w-full h-12 md:h-14">
-                      <InputGroupInput
+                <form_1.FormItem className="col-span-1 md:col-span-2">
+                  <form_1.FormControl>
+                    <inputGroup.InputGroup className="w-full h-12 md:h-14">
+                      <inputGroup.InputGroupInput
                         {...field}
                         placeholder={
                           translations
@@ -242,8 +243,8 @@ export function PropertySearchFilter({
                         className="h-12 md:h-14 placeholder:text-foreground"
                       />
                       {field.value ? (
-                        <InputGroupAddon align="inline-end">
-                          <InputGroupButton
+                        <inputGroup.InputGroupAddon align="inline-end">
+                          <inputGroup.InputGroupButton
                             aria-label="Close"
                             title="Close"
                             size="icon-xs"
@@ -252,44 +253,44 @@ export function PropertySearchFilter({
                             }}
                           >
                             <X />
-                          </InputGroupButton>
-                        </InputGroupAddon>
+                          </inputGroup.InputGroupButton>
+                        </inputGroup.InputGroupAddon>
                       ) : null}
-                    </InputGroup>
-                  </FormControl>
-                </FormItem>
+                    </inputGroup.InputGroup>
+                  </form_1.FormControl>
+                </form_1.FormItem>
               )}
             />
 
             {/* Type */}
-            <FormField
+            <form_1.FormField
               control={form.control}
               name="type"
               render={({ field }) => (
-                <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
+                <form_1.FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
                   <SelectOptionElement options={kindOptions} field={field} />
-                </FormItem>
+                </form_1.FormItem>
               )}
             />
 
             {/* Region */}
-            <FormField
+            <form_1.FormField
               control={form.control}
               name="region"
               render={({ field }) => (
-                <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
+                <form_1.FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
                   <SelectOptionElement options={regionsOptions} field={field} />
-                </FormItem>
+                </form_1.FormItem>
               )}
             />
 
             {/* Township (placeholder) */}
-            <FormField
+            <form_1.FormField
               control={form.control}
               name="township"
               render={({ field }) => (
-                <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
-                  <Select
+                <form_1.FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
+                  <select.Select
                     value={field.value}
                     onValueChange={field.onChange}
                     disabled={
@@ -298,23 +299,28 @@ export function PropertySearchFilter({
                       loadingTownships
                     }
                   >
-                    <SelectTrigger size="custom">
-                      <SelectValue
+                    <select.SelectTrigger size="custom">
+                      <select.SelectValue
                         placeholder={
                           loadingTownships ? "Loading..." : "Select township"
                         }
                       />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="0">Select township</SelectItem>
+                    </select.SelectTrigger>
+                    <select.SelectContent>
+                      <select.SelectItem value="0">
+                        Select township
+                      </select.SelectItem>
                       {townshipOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
+                        <select.SelectItem
+                          key={option.value}
+                          value={option.value}
+                        >
                           {option.label}
-                        </SelectItem>
+                        </select.SelectItem>
                       ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
+                    </select.SelectContent>
+                  </select.Select>
+                </form_1.FormItem>
               )}
             />
           </div>
@@ -331,100 +337,100 @@ export function PropertySearchFilter({
             {/* Property / Hostel */}
             {isHostel ? (
               <>
-                <FormField
+                <form_1.FormField
                   control={form.control}
                   name="hostelType"
                   render={({ field }) => (
-                    <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
+                    <form_1.FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
                       <SelectOptionElement
                         options={hostelTypes}
                         field={field}
                       />
-                    </FormItem>
+                    </form_1.FormItem>
                   )}
                 />
 
-                <FormField
+                <form_1.FormField
                   control={form.control}
                   name="hostelFormat"
                   render={({ field }) => (
-                    <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
+                    <form_1.FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
                       <SelectOptionElement
                         options={hostelFormats}
                         field={field}
                       />
-                    </FormItem>
+                    </form_1.FormItem>
                   )}
                 />
               </>
             ) : (
-              <FormField
+              <form_1.FormField
                 control={form.control}
                 name="propertyType"
                 render={({ field }) => (
-                  <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
+                  <form_1.FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
                     <SelectOptionElement
                       options={propertyTypes}
                       field={field}
                     />
-                  </FormItem>
+                  </form_1.FormItem>
                 )}
               />
             )}
 
             {!isHostel && (
               <>
-                <FormField
+                <form_1.FormField
                   control={form.control}
                   name="minBed"
                   render={({ field }) => (
-                    <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
+                    <form_1.FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
                       <SelectOptionElement
                         options={minBedOptions}
                         field={field}
                       />
-                    </FormItem>
+                    </form_1.FormItem>
                   )}
                 />
 
-                <FormField
+                <form_1.FormField
                   control={form.control}
                   name="maxBed"
                   render={({ field }) => (
-                    <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
+                    <form_1.FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
                       <SelectOptionElement
                         options={maxBedOptions}
                         field={field}
                       />
-                    </FormItem>
+                    </form_1.FormItem>
                   )}
                 />
               </>
             )}
 
-            <FormField
+            <form_1.FormField
               control={form.control}
               name="priceFrom"
               render={({ field }) => (
-                <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
+                <form_1.FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
                   <SelectOptionElement
                     options={minPriceOptions}
                     field={field}
                   />
-                </FormItem>
+                </form_1.FormItem>
               )}
             />
 
-            <FormField
+            <form_1.FormField
               control={form.control}
               name="priceTo"
               render={({ field }) => (
-                <FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
+                <form_1.FormItem className="h-12 md:h-14 col-span-1 md:col-span-1">
                   <SelectOptionElement
                     options={maxPriceOptions}
                     field={field}
                   />
-                </FormItem>
+                </form_1.FormItem>
               )}
             />
           </div>
@@ -451,7 +457,7 @@ export function PropertySearchFilter({
             </Button>
           </div>
         </form>
-      </Form>
+      </form_1.Form>
     </div>
   );
 }
