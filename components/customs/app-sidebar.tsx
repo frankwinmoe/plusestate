@@ -1,7 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { LifeBuoy, List, LucideIcon, Send, SquareTerminal } from "lucide-react";
+import {
+  Building,
+  LifeBuoy,
+  List,
+  LucideIcon,
+  Send,
+  SquareTerminal,
+} from "lucide-react";
 
 import {
   NavMain,
@@ -90,23 +97,36 @@ const data = {
       title: "Dashboard",
       url: "/protected",
       icon: SquareTerminal,
-      // items: [{ title: "Metrics", url: "/protected/metrics" }],
     },
     {
       title: "Listings",
-      url: "/protected/listings",
+      url: "/protected/listings?status=all",
       icon: List,
+      items: [
+        { title: "All listings", url: "/protected/listings?status=all" },
+        { title: "Draft listings", url: "/protected/listings?status=draft" },
+        {
+          title: "Published listings",
+          url: "/protected/listings?status=published",
+        },
+        { title: "Create new listings", url: "/protected/listings/new" },
+      ],
+    },
+    {
+      title: "Agency",
+      url: "/protected/agency",
+      icon: Building,
     },
     // {
     //   title: "Documentation",
     //   url: "#",
     //   icon: BookOpen,
-    //   items: [
-    //     { title: "Introduction", url: "#" },
-    //     { title: "Get Started", url: "#" },
-    //     { title: "Tutorials", url: "#" },
-    //     { title: "Changelog", url: "#" },
-    //   ],
+    // items: [
+    //   { title: "Introduction", url: "#" },
+    //   { title: "Get Started", url: "#" },
+    //   { title: "Tutorials", url: "#" },
+    //   { title: "Changelog", url: "#" },
+    // ],
     // },
     // {
     //   title: "Settings",

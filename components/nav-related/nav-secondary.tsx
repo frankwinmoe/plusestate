@@ -1,13 +1,7 @@
-import * as React from "react";
+import * as sidebar from "@/components/ui/sidebar";
+import { Link } from "@/i18n/navigation";
 import { type LucideIcon } from "lucide-react";
-
-import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import * as React from "react";
 
 export default function NavSecondary({
   items,
@@ -18,23 +12,23 @@ export default function NavSecondary({
     url: string;
     icon: LucideIcon;
   }[];
-} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+} & React.ComponentPropsWithoutRef<typeof sidebar.SidebarGroup>) {
   return (
-    <SidebarGroup {...props}>
-      <SidebarGroupContent>
-        <SidebarMenu>
+    <sidebar.SidebarGroup {...props}>
+      <sidebar.SidebarGroupContent>
+        <sidebar.SidebarMenu>
           {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild size="sm">
-                <a href={item.url}>
+            <sidebar.SidebarMenuItem key={item.title}>
+              <sidebar.SidebarMenuButton asChild size="sm">
+                <Link href={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+                </Link>
+              </sidebar.SidebarMenuButton>
+            </sidebar.SidebarMenuItem>
           ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
+        </sidebar.SidebarMenu>
+      </sidebar.SidebarGroupContent>
+    </sidebar.SidebarGroup>
   );
 }

@@ -1,4 +1,4 @@
-import NavMain from "./nav-main";
+import { NavMain } from "./nav-main";
 import NavProjects from "./nav-projects";
 import NavSecondary from "./nav-secondary";
 import NavUser from "./nav-user";

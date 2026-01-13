@@ -1,24 +1,10 @@
 "use client";
 
-import { BadgeCheck, Bell, ChevronsUpDown, LogOut } from "lucide-react";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
+import * as avatar from "@/components/ui/avatar";
+import * as dropdownMenu from "@/components/ui/dropdown-menu";
+import * as sidebar from "@/components/ui/sidebar";
 import { useAppContext } from "@/context/AppContext";
+import * as lucideReact from "lucide-react";
 
 export default function NavUser({
   user,
@@ -29,7 +15,7 @@ export default function NavUser({
     avatar: string;
   };
 }) {
-  const { isMobile } = useSidebar();
+  const { isMobile } = sidebar.useSidebar();
   const appContext = useAppContext();
   const router = appContext?.router;
   const supabase = appContext?.supabase;
@@ -40,62 +26,66 @@ export default function NavUser({
   };
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
+    <sidebar.SidebarMenu>
+      <sidebar.SidebarMenuItem>
+        <dropdownMenu.DropdownMenu>
+          <dropdownMenu.DropdownMenuTrigger asChild>
+            <sidebar.SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">PE</AvatarFallback>
-              </Avatar>
+              <avatar.Avatar className="h-8 w-8 rounded-lg">
+                <avatar.AvatarImage src={user.avatar} alt={user.name} />
+                <avatar.AvatarFallback className="rounded-lg">
+                  PE
+                </avatar.AvatarFallback>
+              </avatar.Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
+              <lucideReact.ChevronsUpDown className="ml-auto size-4" />
+            </sidebar.SidebarMenuButton>
+          </dropdownMenu.DropdownMenuTrigger>
+          <dropdownMenu.DropdownMenuContent
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuLabel className="p-0 font-normal">
+            <dropdownMenu.DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
+                <avatar.Avatar className="h-8 w-8 rounded-lg">
+                  <avatar.AvatarImage src={user.avatar} alt={user.name} />
+                  <avatar.AvatarFallback className="rounded-lg">
+                    CN
+                  </avatar.AvatarFallback>
+                </avatar.Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
+            </dropdownMenu.DropdownMenuLabel>
+            <dropdownMenu.DropdownMenuSeparator />
+            <dropdownMenu.DropdownMenuGroup>
+              <dropdownMenu.DropdownMenuItem>
+                <lucideReact.BadgeCheck />
                 Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
+              </dropdownMenu.DropdownMenuItem>
+              <dropdownMenu.DropdownMenuItem>
+                <lucideReact.Bell />
                 Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => logout()}>
-              <LogOut />
+              </dropdownMenu.DropdownMenuItem>
+            </dropdownMenu.DropdownMenuGroup>
+            <dropdownMenu.DropdownMenuSeparator />
+            <dropdownMenu.DropdownMenuItem onClick={() => logout()}>
+              <lucideReact.LogOut />
               Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+            </dropdownMenu.DropdownMenuItem>
+          </dropdownMenu.DropdownMenuContent>
+        </dropdownMenu.DropdownMenu>
+      </sidebar.SidebarMenuItem>
+    </sidebar.SidebarMenu>
   );
 }
