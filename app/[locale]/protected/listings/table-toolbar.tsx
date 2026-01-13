@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useRouter } from "@/i18n/navigation";
 import { StatusFilter } from "@/lib/types/database";
 
 import { Plus, X } from "lucide-react";
@@ -33,6 +34,7 @@ export function TableToolbar({
   onFeaturedChange,
   onReset,
 }: TableToolbarProps) {
+  const router = useRouter();
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       {/* Left */}
@@ -89,7 +91,13 @@ export function TableToolbar({
           </Button>
         )}
 
-        <Button size="sm" className="h-9 gap-1">
+        <Button
+          size="sm"
+          className="h-9 gap-1"
+          onClick={() => {
+            router.push(`/protected/listings/new`);
+          }}
+        >
           <Plus className="h-4 w-4" />
           New Listing
         </Button>
