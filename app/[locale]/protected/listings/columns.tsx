@@ -1,4 +1,8 @@
 "use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, Eye, Pencil, Trash, StarOff } from "lucide-react";
 
@@ -14,6 +18,39 @@ import { Listing } from "@/lib/types/database";
 import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { toast } from "sonner";
+
+function DeleteListingMenuItem({ listing }: { listing: Listing }) {
+  const locale = useLocale();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  async function handleDelete() {
+    if (!confirm(`Delete "${listing.title || listing.listing_code}"? This cannot be undone.`)) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/${locale}/api/listings/${listing.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      toast.success("Listing deleted");
+      router.refresh();
+    } catch {
+      toast.error("Could not delete listing");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <DropdownMenuItem
+      className="flex items-center gap-2 text-destructive focus:text-destructive"
+      onClick={handleDelete}
+      disabled={loading}
+    >
+      <Trash className="h-4 w-4" />
+      {loading ? "Deleting…" : "Delete"}
+    </DropdownMenuItem>
+  );
+}
 
 export const columns: ColumnDef<Listing>[] = [
   {
@@ -87,15 +124,7 @@ export const columns: ColumnDef<Listing>[] = [
                 </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem
-                className="flex items-center gap-2 text-destructive focus:text-destructive"
-                onClick={() => {
-                  console.log("Delete", listing.id);
-                }}
-              >
-                <Trash className="h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
+              <DeleteListingMenuItem listing={listing} />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

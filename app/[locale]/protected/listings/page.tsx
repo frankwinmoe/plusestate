@@ -76,11 +76,11 @@ export default function ListingsPage() {
   }
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       <SidebarHeader breadcrumb={breadcrumb} />
-
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <TableToolbar
+      <div className="flex-1 p-4 md:p-6">
+        <div className="mx-auto max-w-6xl space-y-6">
+          <TableToolbar
           total={total}
           search={search}
           status={status}
@@ -105,6 +105,7 @@ export default function ListingsPage() {
             onPageChange={(p) => updateParams({ page: p })}
           />
         )}
+        </div>
       </div>
     </div>
   );

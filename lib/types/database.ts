@@ -1,5 +1,15 @@
 // Database types based on the SQL schema
 
+export interface Profile {
+  id: string;
+  role: string;
+  agency_id?: string | null;
+  email?: string | null;
+  full_name?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type ListingKind = "sale" | "rent" | "new_launch" | "hostel";
 export type ListingStatus = "draft" | "published" | "archived";
 export type CurrencyCode = "MMK" | "USD" | "THB";

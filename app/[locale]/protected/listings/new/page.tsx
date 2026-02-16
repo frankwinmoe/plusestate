@@ -174,7 +174,7 @@ export default function PropertyCreatePage() {
 
   /* ---------- UI ---------- */
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       <SidebarHeader
         breadcrumb={[
           { title: "Dashboard", href: "/protected" },
@@ -182,8 +182,9 @@ export default function PropertyCreatePage() {
           { title: "Create", href: "/protected/listings/new" },
         ]}
       />
-
-      <Card className="max-w-5xl mx-auto">
+      <div className="flex-1 p-4 md:p-6">
+        <div className="mx-auto max-w-4xl space-y-6">
+      <Card>
         <CardHeader>
           <h1 className="text-xl font-bold">Create Property Listing</h1>
         </CardHeader>
@@ -419,6 +420,8 @@ export default function PropertyCreatePage() {
           </form>
         </CardContent>
       </Card>
+        </div>
+      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   List,
   LucideIcon,
   Send,
+  ShieldCheck,
   SquareTerminal,
 } from "lucide-react";
 
@@ -22,6 +23,7 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
+import { PROTECTED_MANAGE_SLUGS, SCHEMA_CONFIG } from "@/lib/admin/schema-config";
 
 interface SidebarData {
   user: {
@@ -113,9 +115,20 @@ const data = {
       ],
     },
     {
-      title: "Agency",
+      title: "My Agency",
       url: "/protected/agency",
       icon: Building,
+    },
+    {
+      title: "Manage data",
+      url: "/protected/regions",
+      icon: ShieldCheck,
+      items: [
+        ...PROTECTED_MANAGE_SLUGS.map((slug) => ({
+          title: SCHEMA_CONFIG[slug].displayName,
+          url: `/protected/${slug}`,
+        })),
+      ],
     },
     // {
     //   title: "Documentation",

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { getPresignedUrl } from "@/lib/services/aws/s3Action";
+import Image from "next/image";
 
 export type ImageUploaderRef = {
   upload: () => Promise<string[]>;
@@ -105,10 +106,12 @@ export const ImageUploader = forwardRef<ImageUploaderRef, Props>(
                 key={index}
                 className="relative group rounded-lg border overflow-hidden"
               >
-                <img
+                <Image
                   src={item.preview}
                   alt="Preview"
                   className="h-32 w-full object-cover"
+                  width={300}
+                  height={300}
                 />
 
                 <Button
