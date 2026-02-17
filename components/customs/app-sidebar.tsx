@@ -1,12 +1,14 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import {
   Building,
   LifeBuoy,
   List,
   LucideIcon,
   Send,
+  Settings,
   ShieldCheck,
   SquareTerminal,
 } from "lucide-react";
@@ -26,6 +28,8 @@ import {
 import { PROTECTED_MANAGE_SLUGS, SCHEMA_CONFIG } from "@/lib/admin/schema-config";
 
 interface SidebarData {
+  appName: string;
+  adminLabel: string;
   user: {
     name: string;
     email: string;
@@ -65,8 +69,8 @@ export const SidebarBuilder: React.FC<SidebarBuilderProps> = ({ data }) => {
             } as React.SVGProps<SVGSVGElement>)}
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">PlusEstate</span>
-            <span className="truncate text-xs">Admin</span>
+            <span className="truncate font-medium">{data.appName}</span>
+            <span className="truncate text-xs">{data.adminLabel}</span>
           </div>
         </div>
       </SidebarHeader>
@@ -88,82 +92,59 @@ export const SidebarBuilder: React.FC<SidebarBuilderProps> = ({ data }) => {
   );
 };
 
-const data = {
-  user: {
-    name: "PlusEstate Admin",
-    email: "admin@plusestate.com",
-    avatar: "/avatars/plus-estate-avatar.jpg",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/protected",
-      icon: SquareTerminal,
-    },
-    {
-      title: "Listings",
-      url: "/protected/listings?status=all",
-      icon: List,
-      items: [
-        { title: "All listings", url: "/protected/listings?status=all" },
-        { title: "Draft listings", url: "/protected/listings?status=draft" },
-        {
-          title: "Published listings",
-          url: "/protected/listings?status=published",
-        },
-        { title: "Create new listings", url: "/protected/listings/new" },
-      ],
-    },
-    {
-      title: "My Agency",
-      url: "/protected/agency",
-      icon: Building,
-    },
-    {
-      title: "Manage data",
-      url: "/protected/regions",
-      icon: ShieldCheck,
-      items: [
-        ...PROTECTED_MANAGE_SLUGS.map((slug) => ({
-          title: SCHEMA_CONFIG[slug].displayName,
-          url: `/protected/${slug}`,
-        })),
-      ],
-    },
-    // {
-    //   title: "Documentation",
-    //   url: "#",
-    //   icon: BookOpen,
-    // items: [
-    //   { title: "Introduction", url: "#" },
-    //   { title: "Get Started", url: "#" },
-    //   { title: "Tutorials", url: "#" },
-    //   { title: "Changelog", url: "#" },
-    // ],
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings2,
-    //   items: [
-    //     { title: "General", url: "#" },
-    //     { title: "Team", url: "#" },
-    //     { title: "Billing", url: "#" },
-    //     { title: "Limits", url: "#" },
-    //   ],
-    // },
-  ],
-  navSecondary: [
-    { title: "Support", url: "/support", icon: LifeBuoy },
-    { title: "Feedback", url: "/feedback", icon: Send },
-  ],
-  // projects: [
-  //   { name: "Design Engineering", url: "#", icon: Frame },
-  //   { name: "Sales & Marketing", url: "#", icon: PieChart },
-  //   { name: "Travel", url: "#", icon: Frame },
-  // ],
-};
-
 export function AppSidebar() {
+  const t = useTranslations("sidebar");
+  const data = React.useMemo(
+    () => ({
+      appName: t("appName"),
+      adminLabel: t("admin"),
+      user: {
+        name: "PlusEstate Admin",
+        email: "admin@plusestate.com",
+        avatar: "/avatars/plus-estate-avatar.jpg",
+      },
+      navMain: [
+        {
+          title: t("dashboard"),
+          url: "/protected",
+          icon: SquareTerminal,
+        },
+        {
+          title: t("listings"),
+          url: "/protected/listings?status=all",
+          icon: List,
+          items: [
+            { title: t("allListings"), url: "/protected/listings?status=all" },
+            { title: t("draftListings"), url: "/protected/listings?status=draft" },
+            {
+              title: t("publishedListings"),
+              url: "/protected/listings?status=published",
+            },
+            { title: t("createNewListings"), url: "/protected/listings/new" },
+          ],
+        },
+        {
+          title: t("myAgency"),
+          url: "/protected/agency",
+          icon: Building,
+        },
+        {
+          title: t("manageData"),
+          url: "/protected/regions",
+          icon: ShieldCheck,
+          items: PROTECTED_MANAGE_SLUGS.map((slug) => ({
+            title: SCHEMA_CONFIG[slug].displayName,
+            url: `/protected/${slug}`,
+          })),
+        },
+      ],
+      navSecondary: [
+        { title: t("support"), url: "/support", icon: LifeBuoy },
+        { title: t("feedback"), url: "/feedback", icon: Send },
+        { title: t("settings"), url: "/protected/settings", icon: Settings },
+      ],
+    }),
+    [t]
+  );
   return <SidebarBuilder data={data} />;
 }

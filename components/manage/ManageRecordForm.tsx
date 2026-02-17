@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { createManageRecord, updateManageRecord } from "@/app/[locale]/protected/actions/manage";
 import type { TableConfig } from "@/lib/admin/schema-config";
+import { LogoUploadField } from "@/components/agency/LogoUploadField";
 
 type FormState = { success: false; error: string } | { success: true; id?: string };
 
@@ -33,6 +35,8 @@ export function ManageRecordForm({
   mode: "create" | "edit";
 }) {
   const router = useRouter();
+  const t = useTranslations("manage");
+  const tCommon = useTranslations("common");
   const editableColumns = config.columns.filter((c) => c.editable);
 
   async function runCreate(_: FormState, formData: FormData) {
@@ -91,7 +95,7 @@ export function ManageRecordForm({
               required={col.required}
             >
               <SelectTrigger id={col.key}>
-                <SelectValue placeholder={`Select ${col.label ?? col.key}`} />
+                <SelectValue placeholder={t("selectPlaceholder", { label: col.label ?? col.key })} />
               </SelectTrigger>
               <SelectContent>
                 {col.enumValues.map((val) => (
@@ -108,6 +112,12 @@ export function ManageRecordForm({
               defaultValue={String(record[col.key] ?? "")}
               required={col.required}
               rows={4}
+            />
+          ) : tableSlug === "agencies" && col.key === "logo_url" ? (
+            <LogoUploadField
+              name={col.key}
+              currentUrl={record[col.key] != null ? String(record[col.key]) : null}
+              label=""
             />
           ) : (
             <Input
@@ -126,9 +136,9 @@ export function ManageRecordForm({
         <p className="text-sm text-destructive">{state.error}</p>
       )}
       <div className="flex gap-2">
-        <Button type="submit">{mode === "create" ? "Create" : "Save changes"}</Button>
+        <Button type="submit">{mode === "create" ? t("create") : t("saveChanges")}</Button>
         <Button type="button" variant="outline" onClick={() => router.back()}>
-          Cancel
+          {t("cancel")}
         </Button>
       </div>
     </form>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,58 +14,66 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { deleteManageRecord } from "@/app/[locale]/protected/actions/manage";
+import { toast } from "sonner";
 
-export function ManageDeleteButton({
-  locale,
-  tableSlug,
-  recordId,
-  itemName,
-}: {
+interface DeleteListingButtonProps {
   locale: string;
-  tableSlug: string;
-  recordId: string;
-  itemName: string;
-}) {
+  listingId: string;
+  listingTitle: string;
+}
+
+export function DeleteListingButton({
+  locale,
+  listingId,
+  listingTitle,
+}: DeleteListingButtonProps) {
   const router = useRouter();
-  const t = useTranslations("manage");
+  const t = useTranslations("listings");
   const tCommon = useTranslations("common");
+  const tManage = useTranslations("manage");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   async function handleDelete() {
     setLoading(true);
-    setError(null);
-    const result = await deleteManageRecord(tableSlug, recordId, locale);
-    setLoading(false);
-    if (result.success) {
+    try {
+      const res = await fetch(`/${locale}/api/listings/${listingId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Delete failed");
+      toast.success(t("listingDeleted"));
       setOpen(false);
-      router.push(`/${locale}/protected/${tableSlug}`);
+      router.push(`/${locale}/protected/listings`);
       router.refresh();
-    } else {
-      setError(result.error);
+    } catch {
+      toast.error(t("deleteFailed"));
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive" size="sm">
-          {tCommon("delete")}
+        <Button
+          variant="outline"
+          size="sm"
+          className="inline-flex items-center gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+        >
+          <Trash2 className="size-4" />
+          {t("deleteListing")}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("deleteConfirmTitle", { name: itemName })}</DialogTitle>
+          <DialogTitle>{t("deleteConfirm", { name: listingTitle })}</DialogTitle>
           <DialogDescription>
-            {t("deleteConfirmDescription")}
+            {tManage("deleteConfirmDescription")}
           </DialogDescription>
         </DialogHeader>
-        {error && <p className="text-sm text-destructive">{error}</p>}
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
-            {t("cancel")}
+            {tCommon("cancel")}
           </Button>
           <Button variant="destructive" onClick={handleDelete} disabled={loading}>
             {loading ? tCommon("deleting") : tCommon("delete")}

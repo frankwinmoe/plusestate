@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { Building, List } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { SectionCards } from "@/components/customs/section-cards";
 import SidebarHeader from "@/components/customs/sidebar-header";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
-const breadcrumb = [{ title: "Dashboard", href: "/protected" }];
-
 export default async function DashboardPage() {
+  const t = await getTranslations("dashboard");
+  const tCommon = await getTranslations("common");
+  const breadcrumb = [{ title: tCommon("dashboard"), href: "/protected" }];
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   let hasAgency = false;
@@ -27,30 +30,28 @@ export default async function DashboardPage() {
         <div className="mx-auto space-y-6">
           <div>
             <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
-              Dashboard
+              {t("title")}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Get started with your agency and listings.
+              {t("subtitle")}
             </p>
           </div>
           <section className="rounded-xl border bg-card p-6 shadow-sm">
-              <h2 className="text-lg font-semibold mb-1">Get started</h2>
+              <h2 className="text-lg font-semibold mb-1">{t("getStarted")}</h2>
               <p className="text-muted-foreground text-sm mb-4">
-                {hasAgency
-                  ? "Create and manage your listings. You can also update your agency details."
-                  : "Create your agency first, then add listings. Your agency is your real estate brand—one agency can have many team members."}
+                {hasAgency ? t("getStartedWithAgency") : t("getStartedNoAgency")}
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button asChild variant={!hasAgency ? "default" : "outline"} size="sm">
                   <Link href="/protected/agency" className="inline-flex items-center gap-2">
                     <Building className="size-4" />
-                    {hasAgency ? "My Agency" : "Create your agency"}
+                    {hasAgency ? t("myAgency") : t("createAgency")}
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="sm">
                   <Link href="/protected/listings/new" className="inline-flex items-center gap-2">
                     <List className="size-4" />
-                    Create a listing
+                    {t("createListing")}
                   </Link>
                 </Button>
               </div>

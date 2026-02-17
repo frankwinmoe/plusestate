@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { getTableConfigBySlug } from "@/lib/admin/schema-config";
 import { fetchAdminList } from "@/lib/admin/data";
 import {
@@ -28,6 +29,8 @@ export default async function ProtectedTablePage({
 }: TablePageProps) {
   const { locale, table: tableSlug } = await params;
   const sp = await searchParams;
+  const t = await getTranslations("manage");
+  const tCommon = await getTranslations("common");
   const config = getTableConfigBySlug(tableSlug);
   if (!config) notFound();
 
@@ -44,13 +47,14 @@ export default async function ProtectedTablePage({
   if (!result) notFound();
 
   const displayCol = config.displayColumn;
+  const listVisibleColumns = config.columns.filter((c) => !c.listHidden);
   const showCols = displayCol
-    ? [config.columns.find((c) => c.key === displayCol), ...config.columns.filter((c) => c.key !== displayCol && c.key !== config.primaryKey)]
-    : config.columns;
+    ? [listVisibleColumns.find((c) => c.key === displayCol), ...listVisibleColumns.filter((c) => c.key !== displayCol && c.key !== config.primaryKey)]
+    : listVisibleColumns;
   const cols = showCols.filter(Boolean) as typeof config.columns;
 
   const breadcrumb = [
-    { title: "Dashboard", href: "/protected" },
+    { title: tCommon("dashboard"), href: "/protected" },
     { title: config.displayName, href: `/${locale}/protected/${tableSlug}` },
   ];
 
@@ -65,7 +69,7 @@ export default async function ProtectedTablePage({
             </h1>
             {config.canCreate && (
               <Button asChild size="sm" className="w-full sm:w-auto">
-                <Link href={`/${locale}/protected/${tableSlug}/new`}>Add new</Link>
+                <Link href={`/${locale}/protected/${tableSlug}/new`}>{t("addNew")}</Link>
               </Button>
             )}
           </div>
@@ -100,7 +104,7 @@ export default async function ProtectedTablePage({
                           colSpan={cols.length + 1}
                           className="h-32 text-center text-muted-foreground"
                         >
-                          No items yet. Add your first one above.
+                          {t("noItemsYet")}
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -117,9 +121,7 @@ export default async function ProtectedTablePage({
                             <TableCell className="text-right">
                               <Button variant="ghost" size="sm" asChild>
                                 <Link href={`/${locale}/protected/${tableSlug}/${rowId}`}>
-                                  {typeof displayVal === "string" && displayVal.length < 30
-                                    ? displayVal
-                                    : "Open"}
+                                  Edit
                                 </Link>
                               </Button>
                             </TableCell>
@@ -134,15 +136,17 @@ export default async function ProtectedTablePage({
           </Card>
 
           {result.totalPages > 0 && (
-            <ManageTablePagination
-              locale={locale}
-              tableSlug={tableSlug}
-              page={result.page}
-              totalPages={result.totalPages}
-              total={result.total}
-              pageSize={pageSize}
-              search={search}
-            />
+            <Suspense fallback={null}>
+              <ManageTablePagination
+                locale={locale}
+                tableSlug={tableSlug}
+                page={result.page}
+                totalPages={result.totalPages}
+                total={result.total}
+                pageSize={pageSize}
+                search={search}
+              />
+            </Suspense>
           )}
         </div>
       </div>

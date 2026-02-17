@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import SidebarHeader from "@/components/customs/sidebar-header";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -6,17 +7,19 @@ import { AgencyForm } from "./agency-form";
 import { AgencyTeamSection } from "./agency-team-section";
 import { getAgencyMembers } from "./actions";
 
-const breadcrumb = [
-  { title: "Dashboard", href: "/protected" },
-  { title: "My Agency", href: "/protected/agency" },
-];
-
 interface AgencyPageProps {
   params: Promise<{ locale: string }>;
 }
 
 export default async function AgencyPage({ params }: AgencyPageProps) {
   const { locale } = await params;
+  const t = await getTranslations("agency");
+  const tCommon = await getTranslations("common");
+  const breadcrumb = [
+    { title: tCommon("dashboard"), href: "/protected" },
+    { title: t("title"), href: "/protected/agency" },
+  ];
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect(`/${locale}/auth/login`);
@@ -47,19 +50,17 @@ export default async function AgencyPage({ params }: AgencyPageProps) {
         <div className="mx-auto max-w-3xl space-y-6">
           <div>
             <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
-              My Agency
+              {t("title")}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {agency
-                ? "Update your agency details and manage team members."
-                : "Create your agency to start adding listings. One agency can have many team members."}
+              {agency ? t("subtitleWithAgency") : t("subtitleNoAgency")}
             </p>
           </div>
 
           <Card>
             <CardHeader>
               <h2 className="text-base font-semibold">
-                {agency ? "Agency details" : "Create agency"}
+                {agency ? t("agencyDetails") : t("createAgency")}
               </h2>
             </CardHeader>
             <CardContent>

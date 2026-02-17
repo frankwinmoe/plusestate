@@ -10,6 +10,8 @@ export type ColumnDef = {
   type?: "string" | "number" | "boolean" | "uuid" | "timestamp" | "text" | "integer" | "numeric" | "enum";
   enumValues?: readonly string[];
   required?: boolean;
+  /** If true, column is not shown in the list/table view (e.g. logo_url). */
+  listHidden?: boolean;
 };
 
 export type ForeignKeyDef = {
@@ -138,7 +140,7 @@ export const SCHEMA_CONFIG: Record<AdminTableSlug, TableConfig> = {
     columns: [
       { key: "id", label: "ID", editable: false, type: "uuid" },
       { key: "display_name", label: "Display name", editable: true, type: "string", required: true },
-      { key: "logo_url", label: "Logo URL", editable: true, type: "string" },
+      { key: "logo_url", label: "Logo URL", editable: true, type: "string", listHidden: true },
       { key: "phone", label: "Phone", editable: true, type: "string" },
       { key: "email", label: "Email", editable: true, type: "string" },
       { key: "created_at", label: "Created at", editable: false, type: "timestamp" },

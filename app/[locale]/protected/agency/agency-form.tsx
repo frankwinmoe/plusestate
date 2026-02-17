@@ -2,9 +2,11 @@
 
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LogoUploadField } from "@/components/agency/LogoUploadField";
 import { createMyAgency, updateMyAgency } from "./actions";
 
 type Agency = {
@@ -21,6 +23,8 @@ const initialFormState: FormState = { success: false, error: "" };
 
 export function AgencyForm({ agency, locale }: { agency: Agency; locale: string }) {
   const router = useRouter();
+  const t = useTranslations("agency");
+  const tCommon = useTranslations("common");
 
   async function createAction(_prev: FormState, formData: FormData): Promise<FormState> {
     const result = await createMyAgency(formData, locale);
@@ -49,50 +53,45 @@ export function AgencyForm({ agency, locale }: { agency: Agency; locale: string 
   return (
     <form action={run} className="space-y-6 max-w-xl">
       <div className="space-y-2">
-        <Label htmlFor="display_name">Agency name *</Label>
+        <Label htmlFor="display_name">{t("agencyName")} *</Label>
         <Input
           id="display_name"
           name="display_name"
           defaultValue={agency?.display_name ?? ""}
-          placeholder="e.g. Golden Property"
+          placeholder={t("agencyNamePlaceholder")}
           required
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="phone">Phone</Label>
+        <Label htmlFor="phone">{t("phone")}</Label>
         <Input
           id="phone"
           name="phone"
           type="tel"
           defaultValue={agency?.phone ?? ""}
-          placeholder="+95 9 123 456 789"
+          placeholder={t("phonePlaceholder")}
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{t("email")}</Label>
         <Input
           id="email"
           name="email"
           type="email"
           defaultValue={agency?.email ?? ""}
-          placeholder="contact@agency.com"
+          placeholder={t("emailPlaceholder")}
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="logo_url">Logo URL</Label>
-        <Input
-          id="logo_url"
-          name="logo_url"
-          type="url"
-          defaultValue={agency?.logo_url ?? ""}
-          placeholder="https://..."
-        />
-      </div>
+      <LogoUploadField
+        name="logo_url"
+        currentUrl={agency?.logo_url ?? null}
+        label={t("logo")}
+      />
       {state && !state.success && state.error && (
         <p className="text-sm text-destructive">{state.error}</p>
       )}
       <Button type="submit">
-        {agency ? "Save changes" : "Create agency"}
+        {agency ? tCommon("saveChanges") : t("createAgency")}
       </Button>
     </form>
   );

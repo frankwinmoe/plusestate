@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,7 @@ export function ManageListToolbar({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const t = useTranslations("manage");
 
   function handleSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -38,18 +40,18 @@ export function ManageListToolbar({
   return (
     <form onSubmit={handleSearch} className="flex items-end gap-4">
       <div className="grid w-full max-w-sm items-center gap-2">
-        <Label htmlFor="q">Search</Label>
+        <Label htmlFor="q">{t("search")}</Label>
         <Input
           id="q"
           name="q"
           type="search"
-          placeholder="Search by name..."
+          placeholder={t("searchPlaceholder")}
           defaultValue={search}
           className="h-9"
         />
       </div>
       <Button type="submit" size="sm" disabled={isPending}>
-        {isPending ? "Searching..." : "Search"}
+        {isPending ? t("searching") : t("search")}
       </Button>
     </form>
   );

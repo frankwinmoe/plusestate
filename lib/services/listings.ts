@@ -221,6 +221,16 @@ export default class ListingsService {
     }
 
     async delete(id: string): Promise<void> {
+        // Delete associated listing_images first (works even if DB has no CASCADE)
+        const { error: imagesError } = await this.supabase
+            .from(this.imagesTable)
+            .delete()
+            .eq("listing_id", id);
+
+        if (imagesError) {
+            throw new Error(`Error deleting listing images: ${imagesError.message}`);
+        }
+
         const { error } = await this.supabase
             .from(this.table)
             .delete()

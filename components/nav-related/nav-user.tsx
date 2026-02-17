@@ -5,6 +5,8 @@ import * as dropdownMenu from "@/components/ui/dropdown-menu";
 import * as sidebar from "@/components/ui/sidebar";
 import { useAppContext } from "@/context/AppContext";
 import * as lucideReact from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export default function NavUser({
   user,
@@ -19,6 +21,7 @@ export default function NavUser({
   const appContext = useAppContext();
   const router = appContext?.router;
   const supabase = appContext?.supabase;
+  const t = useTranslations("sidebar");
 
   const logout = async () => {
     await supabase?.auth.signOut();
@@ -69,19 +72,21 @@ export default function NavUser({
             </dropdownMenu.DropdownMenuLabel>
             <dropdownMenu.DropdownMenuSeparator />
             <dropdownMenu.DropdownMenuGroup>
-              <dropdownMenu.DropdownMenuItem>
-                <lucideReact.BadgeCheck />
-                Account
+              <dropdownMenu.DropdownMenuItem asChild>
+                <Link href="/protected/profile" className="flex items-center gap-2">
+                  <lucideReact.BadgeCheck />
+                  {t("account")}
+                </Link>
               </dropdownMenu.DropdownMenuItem>
               <dropdownMenu.DropdownMenuItem>
                 <lucideReact.Bell />
-                Notifications
+                {t("notifications")}
               </dropdownMenu.DropdownMenuItem>
             </dropdownMenu.DropdownMenuGroup>
             <dropdownMenu.DropdownMenuSeparator />
             <dropdownMenu.DropdownMenuItem onClick={() => logout()}>
               <lucideReact.LogOut />
-              Log out
+              {t("logOut")}
             </dropdownMenu.DropdownMenuItem>
           </dropdownMenu.DropdownMenuContent>
         </dropdownMenu.DropdownMenu>

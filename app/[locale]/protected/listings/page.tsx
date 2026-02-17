@@ -2,25 +2,27 @@
 
 import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import Loader from "@/components/customs/loader";
 import SidebarHeader from "@/components/customs/sidebar-header";
 import { getAllListing } from "@/lib/helpers";
 import { Listing, ListingStatus } from "@/lib/types/database";
-import { columns } from "./columns";
+import { getColumns } from "./columns";
 import { DataTable } from "./data-table";
 import { TableToolbar } from "./table-toolbar";
-
-const breadcrumb = [
-  { title: "Dashboard", href: "/protected" },
-  { title: "Listings", href: "/protected/listings" },
-];
 
 const PAGE_SIZE = 10;
 
 export default function ListingsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("listings");
+  const tCommon = useTranslations("common");
+  const breadcrumb = [
+    { title: tCommon("dashboard"), href: "/protected" },
+    { title: t("title"), href: "/protected/listings" },
+  ];
 
   // -----------------------------
   // Read from URL
@@ -93,11 +95,11 @@ export default function ListingsPage() {
 
         {loading ? (
           <div className="flex h-[calc(100vh-64px)] items-center justify-center">
-            <Loader loadingText="Loading Listings..." />
+            <Loader loadingText={tCommon("loading")} />
           </div>
         ) : (
           <DataTable
-            columns={columns}
+            columns={getColumns(t)}
             data={listings}
             page={page}
             pageSize={PAGE_SIZE}

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { getTableConfigBySlug } from "@/lib/admin/schema-config";
 import { Button } from "@/components/ui/button";
 import { ManageRecordForm } from "@/components/manage/ManageRecordForm";
@@ -12,6 +13,8 @@ interface NewPageProps {
 
 export default async function ProtectedTableNewPage({ params }: NewPageProps) {
   const { locale, table: tableSlug } = await params;
+  const t = await getTranslations("manage");
+  const tCommon = await getTranslations("common");
   const allowed = PROTECTED_MANAGE_SLUGS.includes(
     tableSlug as (typeof PROTECTED_MANAGE_SLUGS)[number]
   );
@@ -22,9 +25,9 @@ export default async function ProtectedTableNewPage({ params }: NewPageProps) {
   if (!config.canCreate) notFound();
 
   const breadcrumb = [
-    { title: "Dashboard", href: "/protected" },
+    { title: tCommon("dashboard"), href: "/protected" },
     { title: config.displayName, href: `/${locale}/protected/${tableSlug}` },
-    { title: "Add new" },
+    { title: t("addNew") },
   ];
 
   return (
@@ -34,10 +37,10 @@ export default async function ProtectedTableNewPage({ params }: NewPageProps) {
         <div className="mx-auto max-w-4xl space-y-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
-              Add new {config.displayName.toLowerCase().replace(/s$/, "")}
+              {t("addNew")} {config.displayName.toLowerCase().replace(/s$/, "")}
             </h1>
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/${locale}/protected/${tableSlug}`}>Back to list</Link>
+              <Link href={`/${locale}/protected/${tableSlug}`}>{tCommon("backToList")}</Link>
             </Button>
           </div>
           <ManageRecordForm

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,36 +32,37 @@ export function AgencyTeamSection({
   }
 
   const [state, run] = useActionState(addAction, { success: false });
+  const t = useTranslations("agency");
 
   return (
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <Users className="size-5 text-muted-foreground" />
-          <h3 className="text-base font-semibold">Team members</h3>
+          <h3 className="text-base font-semibold">{t("teamMembers")}</h3>
         </div>
         <p className="text-sm text-muted-foreground">
-          Add users by email. They must already have an account.
+          {t("teamMembersHint")}
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
         <form action={run} className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="flex-1 space-y-2">
             <Label htmlFor="team-email" className="sr-only">
-              Email
+              {t("email")}
             </Label>
             <Input
               id="team-email"
               name="email"
               type="email"
-              placeholder="teammate@example.com"
+              placeholder={t("emailPlaceholderAdd")}
               required
               className="w-full"
             />
           </div>
           <Button type="submit" size="sm" className="sm:w-auto">
             <UserPlus className="size-4 mr-2" />
-            Add user
+            {t("addUser")}
           </Button>
         </form>
         {state && !state.success && "error" in state && state.error && (
@@ -68,7 +70,7 @@ export function AgencyTeamSection({
         )}
         {members.length === 0 ? (
           <p className="text-sm text-muted-foreground py-2">
-            No other members yet. Add someone by email above.
+            {t("noMembersYet")}
           </p>
         ) : (
           <ul className="divide-y rounded-md border">
@@ -84,7 +86,7 @@ export function AgencyTeamSection({
                   )}
                 </span>
                 {m.id === currentUserId && (
-                  <span className="text-xs text-muted-foreground">You</span>
+                  <span className="text-xs text-muted-foreground">{t("you")}</span>
                 )}
               </li>
             ))}

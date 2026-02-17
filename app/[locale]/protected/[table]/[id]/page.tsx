@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { getTableConfigBySlug } from "@/lib/admin/schema-config";
 import { fetchAdminRecord } from "@/lib/admin/data";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,8 @@ interface RecordPageProps {
 
 export default async function ProtectedTableRecordPage({ params }: RecordPageProps) {
   const { locale, table: tableSlug, id } = await params;
+  const t = await getTranslations("manage");
+  const tCommon = await getTranslations("common");
   const config = getTableConfigBySlug(tableSlug);
   if (!config) notFound();
 
@@ -25,9 +28,9 @@ export default async function ProtectedTableRecordPage({ params }: RecordPagePro
     : id;
 
   const breadcrumb = [
-    { title: "Dashboard", href: "/protected" },
+    { title: tCommon("dashboard"), href: "/protected" },
     { title: config.displayName, href: `/${locale}/protected/${tableSlug}` },
-    { title: displayVal !== "—" ? String(displayVal) : "Details" },
+    { title: displayVal !== "—" ? String(displayVal) : t("details") },
   ];
 
   return (
@@ -38,7 +41,7 @@ export default async function ProtectedTableRecordPage({ params }: RecordPagePro
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <Button variant="outline" size="sm" asChild>
-                <Link href={`/${locale}/protected/${tableSlug}`}>Back to list</Link>
+                <Link href={`/${locale}/protected/${tableSlug}`}>{tCommon("backToList")}</Link>
               </Button>
               <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
                 {displayVal !== "—" ? String(displayVal) : config.displayName}

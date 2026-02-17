@@ -1,6 +1,7 @@
 "use client";
 
 import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -24,6 +25,7 @@ type Props = {
 
 export const ImageUploader = forwardRef<ImageUploaderRef, Props>(
   ({ folder: initialFolder }, ref) => {
+    const t = useTranslations("listings");
     const [items, setItems] = useState<PreviewFile[]>([]);
     const [uploading, setUploading] = useState(false);
     const [folder, setFolder] = useState(initialFolder);
@@ -91,12 +93,25 @@ export const ImageUploader = forwardRef<ImageUploaderRef, Props>(
 
     return (
       <div className="space-y-3">
-        <Input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={(e) => onSelectFiles(e.target.files)}
-        />
+        <label
+          htmlFor="listing-images-upload"
+          className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/30 px-4 py-6 transition-colors hover:border-muted-foreground/40 hover:bg-muted/50"
+        >
+          <input
+            id="listing-images-upload"
+            type="file"
+            multiple
+            accept="image/*"
+            className="sr-only"
+            onChange={(e) => onSelectFiles(e.target.files)}
+          />
+          <span className="text-sm font-medium text-muted-foreground">
+            {t("imagesUploadHint")}
+          </span>
+          <span className="mt-1 text-xs text-muted-foreground">
+            {t("multipleImagesSupported")}
+          </span>
+        </label>
 
         {/* ---------- thumbnails ---------- */}
         {items.length > 0 && (
@@ -129,7 +144,7 @@ export const ImageUploader = forwardRef<ImageUploaderRef, Props>(
         )}
 
         {uploading && (
-          <p className="text-sm text-muted-foreground">Uploading images…</p>
+          <p className="text-sm text-muted-foreground">{t("uploadingImages")}</p>
         )}
       </div>
     );

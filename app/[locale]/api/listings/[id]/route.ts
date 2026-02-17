@@ -1,5 +1,6 @@
 // app/[locale]/api/listings/[id]/route.ts
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import ListingsService from "@/lib/services/listings";
 
 export async function GET(_: Request, context: { params: Promise<{ id: string }> }) {
@@ -34,9 +35,23 @@ export async function DELETE(
     context: { params: Promise<{ id: string }> }
 ) {
     const { id } = await context.params;
-    const supabase = await createClient();
-    const service = new ListingsService(supabase);
+    const userSupabase = await createClient();
+    const { data: { user } } = await userSupabase.auth.getUser();
+    if (!user) {
+        return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    await service.delete(id);
+    const adminSupabase = createAdminClient();
+    const adminService = new ListingsService(adminSupabase);
+    const listing = await adminService.getById(id);
+    if (!listing) {
+        return Response.json({ error: "Not found" }, { status: 404 });
+    }
+    const listingOwnerId = listing.owner_user_id;
+    if (listingOwnerId != null && listingOwnerId !== user.id) {
+        return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    await adminService.delete(id);
     return Response.json({ success: true });
 }

@@ -8,7 +8,7 @@ import {
   PropertyCreateInput,
 } from "@/lib/schemas/property.schema";
 import * as select from "@/components/ui/select";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,6 +60,8 @@ export function ListingEditForm({
 }) {
   const supabase = createClient();
   const localeHook = useLocale();
+  const t = useTranslations("listings");
+  const tManage = useTranslations("manage");
   const [regions, setRegions] = useState<Region[]>([]);
   const [townships, setTownships] = useState<Township[]>([]);
   const [propertyTypes, setPropertyTypes] = useState<PropertyType[]>([]);
@@ -143,12 +145,12 @@ export function ListingEditForm({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(urls.map((image_url) => ({ image_url }))),
         });
-        if (!imgRes.ok) toast.error("Listing saved but some images failed to save.");
+        if (!imgRes.ok) toast.error(t("createFailed"));
       }
-      toast.success("Listing updated");
+      toast.success(t("listingUpdated"));
     } catch (e) {
       console.error(e);
-      toast.error(e instanceof Error ? e.message : "Something went wrong");
+      toast.error(e instanceof Error ? e.message : t("createFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -163,14 +165,14 @@ export function ListingEditForm({
       <CardContent className="pt-6">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid grid-cols-3 gap-4">
-            <Input placeholder="Listing Code" {...form.register("listing_code")} />
+            <Input placeholder={t("code")} {...form.register("listing_code")} />
             <Controller
               control={form.control}
               name="kind"
               render={({ field }) => (
                 <select.Select value={field.value} onValueChange={field.onChange}>
                   <select.SelectTrigger className="w-full">
-                    <select.SelectValue placeholder="Kind" />
+                    <select.SelectValue placeholder={tManage("selectPlaceholder", { label: t("kind") })} />
                   </select.SelectTrigger>
                   <select.SelectContent>
                     <select.SelectItem value="sale">Sale</select.SelectItem>
@@ -187,12 +189,12 @@ export function ListingEditForm({
               render={({ field }) => (
                 <select.Select value={field.value} onValueChange={field.onChange}>
                   <select.SelectTrigger className="w-full">
-                    <select.SelectValue placeholder="Status" />
+                    <select.SelectValue placeholder={tManage("selectPlaceholder", { label: t("status") })} />
                   </select.SelectTrigger>
                   <select.SelectContent>
-                    <select.SelectItem value="draft">Draft</select.SelectItem>
-                    <select.SelectItem value="published">Published</select.SelectItem>
-                    <select.SelectItem value="archived">Archived</select.SelectItem>
+                    <select.SelectItem value="draft">{t("statusDraft")}</select.SelectItem>
+                    <select.SelectItem value="published">{t("statusPublished")}</select.SelectItem>
+                    <select.SelectItem value="archived">{t("statusArchived")}</select.SelectItem>
                   </select.SelectContent>
                 </select.Select>
               )}
@@ -200,11 +202,11 @@ export function ListingEditForm({
           </div>
           <label className="flex items-center gap-2">
             <input type="checkbox" {...form.register("is_featured")} />
-            Featured
+            {t("featuredListing")}
           </label>
-          <Input placeholder="Title" {...form.register("title")} />
+          <Input placeholder={t("titleLabel")} {...form.register("title")} />
           <textarea
-            placeholder="Description"
+            placeholder={t("description")}
             {...form.register("description")}
             className="w-full min-h-[120px] rounded-md border p-3"
           />
@@ -216,7 +218,7 @@ export function ListingEditForm({
                 <FormCombobox
                   value={field.value}
                   onChangeAction={field.onChange}
-                  placeholder="Region"
+                  placeholder={t("region")}
                   options={regions.map((r) => ({
                     value: r.id,
                     label: loc === "en" && r.name_en ? r.name_en : r.name_mm,
@@ -232,10 +234,10 @@ export function ListingEditForm({
                   value={field.value}
                   onChangeAction={field.onChange}
                   disabled={!regionId}
-                  placeholder="Township"
-                  options={townships.map((t) => ({
-                    value: t.id,
-                    label: loc === "en" && t.name_en ? t.name_en : t.name_mm,
+                  placeholder={t("township")}
+                  options={townships.map((tw) => ({
+                    value: tw.id,
+                    label: loc === "en" && tw.name_en ? tw.name_en : tw.name_mm,
                   }))}
                 />
               )}
@@ -247,7 +249,7 @@ export function ListingEditForm({
                 <FormCombobox
                   value={field.value}
                   onChangeAction={field.onChange}
-                  placeholder="Property type"
+                  placeholder={t("propertyType")}
                   options={propertyTypes.map((p) => ({
                     value: p.id,
                     label: loc === "en" && p.name_en ? p.name_en : p.name_mm,
@@ -257,15 +259,15 @@ export function ListingEditForm({
             />
           </div>
           <div className="grid grid-cols-3 gap-4">
-            <Input type="number" placeholder="Bedrooms" {...form.register("bedrooms", { valueAsNumber: true })} />
-            <Input type="number" placeholder="Bathrooms" {...form.register("bathrooms", { valueAsNumber: true })} />
-            <Input placeholder="Floor" {...form.register("floor_label")} />
+            <Input type="number" placeholder={t("bedrooms")} {...form.register("bedrooms", { valueAsNumber: true })} />
+            <Input type="number" placeholder={t("bathrooms")} {...form.register("bathrooms", { valueAsNumber: true })} />
+            <Input placeholder={t("floor")} {...form.register("floor_label")} />
           </div>
           <div className="grid grid-cols-4 gap-4">
-            <Input type="number" placeholder="Width (ft)" {...form.register("width_ft", { valueAsNumber: true })} />
-            <Input type="number" placeholder="Length (ft)" {...form.register("length_ft", { valueAsNumber: true })} />
-            <Input type="number" placeholder="Area (sqft)" {...form.register("area_sqft", { valueAsNumber: true })} />
-            <Input placeholder="Area label" {...form.register("area_label")} />
+            <Input type="number" placeholder={t("widthFt")} {...form.register("width_ft", { valueAsNumber: true })} />
+            <Input type="number" placeholder={t("lengthFt")} {...form.register("length_ft", { valueAsNumber: true })} />
+            <Input type="number" placeholder={t("areaSqft")} {...form.register("area_sqft", { valueAsNumber: true })} />
+            <Input placeholder={t("areaLabel")} {...form.register("area_label")} />
           </div>
           <div className="grid grid-cols-4 gap-4">
             <Controller
@@ -275,7 +277,7 @@ export function ListingEditForm({
                 <FormCombobox
                   value={field.value}
                   onChangeAction={field.onChange}
-                  placeholder="Currency"
+                  placeholder={t("currency")}
                   options={[
                     { value: "MMK", label: "MMK" },
                     { value: "USD", label: "USD" },
@@ -284,14 +286,14 @@ export function ListingEditForm({
                 />
               )}
             />
-            <Input type="number" placeholder="Price" {...form.register("price_amount", { valueAsNumber: true })} />
-            <Input placeholder="Unit" {...form.register("price_unit_label")} />
-            <Input type="number" placeholder="Price/sqft" {...form.register("price_per_sqft", { valueAsNumber: true })} />
+            <Input type="number" placeholder={t("amount")} {...form.register("price_amount", { valueAsNumber: true })} />
+            <Input placeholder={t("unit")} {...form.register("price_unit_label")} />
+            <Input type="number" placeholder={t("pricePerSqft")} {...form.register("price_per_sqft", { valueAsNumber: true })} />
           </div>
-          <Input placeholder="Address" {...form.register("address_text")} />
-          <Input placeholder="Agency ID" {...form.register("agency_id")} />
+          <Input placeholder={t("fullAddress")} {...form.register("address_text")} />
+          <Input placeholder={t("agency")} {...form.register("agency_id")} />
           <div>
-            <p className="text-sm text-muted-foreground mb-2">Add more images</p>
+            <p className="text-sm text-muted-foreground mb-2">{t("addMoreImages")}</p>
             <ImageUploader ref={imageUploaderRef} folder={listing.listing_code} />
           </div>
           <Button
@@ -299,7 +301,7 @@ export function ListingEditForm({
             className="w-full"
             disabled={submitting || imageUploaderRef.current?.uploading}
           >
-            {submitting || imageUploaderRef.current?.uploading ? "Saving…" : "Save changes"}
+            {submitting || imageUploaderRef.current?.uploading ? t("saving") : t("saveChanges")}
           </Button>
         </form>
       </CardContent>

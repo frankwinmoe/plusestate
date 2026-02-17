@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -35,12 +36,13 @@ export function TableToolbar({
   onReset,
 }: TableToolbarProps) {
   const router = useRouter();
+  const t = useTranslations("listings");
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       {/* Left */}
       <div className="flex items-center gap-2">
         <h2 className="text-lg font-semibold">
-          Listings
+          {t("title")}
           <span className="ml-2 text-sm font-normal text-muted-foreground">
             ({total})
           </span>
@@ -50,7 +52,7 @@ export function TableToolbar({
       {/* Right */}
       <div className="flex flex-wrap items-center gap-2">
         <Input
-          placeholder="Search code or title..."
+          placeholder={t("searchPlaceholder")}
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           className="h-9 min-w-[280px] sm:w-full md:w-[280px] xl:w-[360px]"
@@ -58,25 +60,25 @@ export function TableToolbar({
         {/* status */}
         <Select value={status} onValueChange={onStatusChange}>
           <SelectTrigger className="h-9 w-[140px]">
-            <SelectValue placeholder="Status" />
+            <SelectValue placeholder={t("status")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="published">Published</SelectItem>
-            <SelectItem value="draft">Draft</SelectItem>
-            <SelectItem value="archived">Archived</SelectItem>
+            <SelectItem value="all">{t("statusAll")}</SelectItem>
+            <SelectItem value="published">{t("statusPublished")}</SelectItem>
+            <SelectItem value="draft">{t("statusDraft")}</SelectItem>
+            <SelectItem value="archived">{t("statusArchived")}</SelectItem>
           </SelectContent>
         </Select>
 
         {/* feature */}
         <Select value={featured} onValueChange={onFeaturedChange}>
           <SelectTrigger className="h-9 w-[140px]">
-            <SelectValue placeholder="Featured" />
+            <SelectValue placeholder={t("featuredPlaceholder")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="true">On</SelectItem>
-            <SelectItem value="false">Off</SelectItem>
+            <SelectItem value="all">{t("featuredAll")}</SelectItem>
+            <SelectItem value="true">{t("featuredOn")}</SelectItem>
+            <SelectItem value="false">{t("featuredOff")}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -99,7 +101,7 @@ export function TableToolbar({
           }}
         >
           <Plus className="h-4 w-4" />
-          New Listing
+          {t("newListing")}
         </Button>
       </div>
     </div>

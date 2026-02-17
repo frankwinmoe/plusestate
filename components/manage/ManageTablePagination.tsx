@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { cn } from "@/lib/utils";
 import {
   Pagination,
@@ -34,7 +35,7 @@ function buildHref(
   return `/${locale}/protected/${tableSlug}?${params.toString()}`;
 }
 
-export function ManageTablePagination({
+export async function ManageTablePagination({
   locale,
   tableSlug,
   page,
@@ -43,6 +44,7 @@ export function ManageTablePagination({
   pageSize,
   search,
 }: Props) {
+  const t = await getTranslations("manage");
   const delta = 1;
   const pageNumbers: number[] = [];
   const start = Math.max(1, page - delta);
@@ -57,9 +59,8 @@ export function ManageTablePagination({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-sm text-muted-foreground">
-        Page <span className="font-medium text-foreground">{page}</span> of{" "}
-        <span className="font-medium text-foreground">{totalPages}</span>
-        <span className="hidden sm:inline"> ({total} items)</span>
+        {t("pageOf", { page, totalPages })}
+        <span className="hidden sm:inline"> ({total})</span>
       </p>
       <Pagination>
         <PaginationContent>

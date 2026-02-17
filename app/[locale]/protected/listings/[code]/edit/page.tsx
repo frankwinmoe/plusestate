@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import ListingsService from "@/lib/services/listings";
 import SidebarHeader from "@/components/customs/sidebar-header";
@@ -12,6 +13,8 @@ interface EditPageProps {
 
 export default async function ListingEditPage({ params }: EditPageProps) {
   const { locale, code } = await params;
+  const t = await getTranslations("listings");
+  const tCommon = await getTranslations("common");
   const supabase = await createClient();
   const service = new ListingsService(supabase);
 
@@ -19,10 +22,10 @@ export default async function ListingEditPage({ params }: EditPageProps) {
   if (!listing) notFound();
 
   const breadcrumb = [
-    { title: "Dashboard", href: "/protected" },
-    { title: "Listings", href: "/protected/listings" },
+    { title: tCommon("dashboard"), href: "/protected" },
+    { title: t("title"), href: "/protected/listings" },
     { title: listing.title || listing.listing_code, href: `/protected/listings/${code}` },
-    { title: "Edit" },
+    { title: t("editListingTitle") },
   ];
 
   return (
@@ -32,11 +35,11 @@ export default async function ListingEditPage({ params }: EditPageProps) {
         <div className="mx-auto max-w-4xl space-y-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
-              Edit listing
+              {t("editListingTitle")}
             </h1>
             <Button variant="outline" size="sm" asChild>
               <Link href={`/${locale}/protected/listings/${code}`}>
-                View listing
+                {t("viewListingLink")}
               </Link>
             </Button>
           </div>
